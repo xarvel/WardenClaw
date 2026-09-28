@@ -1,0 +1,8 @@
+---
+// The push notification page. Its source keeps the name apple-watch.*.md (app/docs/BUILD.md
+// points there).
+import DocsPage from "../../components/DocsPage.astro";
+import { en } from "../../i18n/en";
+import { Content, frontmatter, getHeadings } from "../../docs/apple-watch.en.md";
+---
+<DocsPage t={en} frontmatter={frontmatter} headings={getHeadings()} slug="apns/"><Content /></DocsPage>

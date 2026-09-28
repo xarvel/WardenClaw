@@ -1,0 +1,19 @@
+wardenclaw-gate (OpenClaw plugin for the WardenClaw execution gate)
+Copyright (C) 2026 The WardenClaw Authors
+
+This product is licensed under the Apache License, Version 2.0 (see
+LICENSE).
+
+The tests read the WardenClaw protocol test vectors from protocol/vectors/
+at the root of the repository (Apache License 2.0).
+
+"WardenClaw" and the WardenClaw logo are trademarks of The WardenClaw
+Authors; the Apache License does not grant permission to use them (section
+6). See TRADEMARKS.md at the root of the repository.
+
+Third-party components
+----------------------
+
+The plugin has no runtime dependencies beyond Node.js and the OpenClaw
+plugin API. The development dependency @noble/ed25519 (MIT, Copyright (c)
+2019 Paul Miller) is used by the tests only.

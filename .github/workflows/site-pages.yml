@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: Apache-2.0
+# site/ on GitHub Pages under the custom domain (site/public/CNAME), with install.sh of the latest
+# daemon release at the site root:  curl -fsSL https://wardenclaw.dev/install.sh | sudo sh
+# That install.sh is not built from the tree. site/scripts/fetch-install-sh.sh takes it from the
+# release GitHub marks latest (the one install.sh itself installs from) and lets it through only
+# if its sha256 is the one in the release's checksums.txt and its identity block matches the site
+# (releases are not signed). No published release yet: the site goes out without install.sh and
+# the run says so. Anything else wrong: nothing is deployed, the old site stays.
+# Details: daemon/docs/release.md, section "GitHub Pages site and install.sh from the site".
+name: site-pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/site-pages.yml"]
+  # Publishing, unpublishing or deleting a daemon release changes what releases/latest is.
+  release:
+    types: [released, unpublished, deleted]
+  workflow_dispatch:
+
+permissions: {}
+
+# One deployment at a time, in order; a newer queued run replaces an older queued one (it builds
+# the same main and the same latest release, only newer). A release event only dispatches a run,
+# so it stays out of that queue: otherwise a release of another component, with every job
+# skipped, could replace a queued deploy.
+concurrency:
+  group: ${{ github.event_name == 'release' && format('pages-release-{0}', github.run_id) || 'pages' }}
+  cancel-in-progress: false
+
+jobs:
+  # A release event runs this file as of the tag, and the github-pages environment only takes
+  # deployments from the default branch. So a release only restarts the workflow on the default
+  # branch: workflow_dispatch is one of the two events GITHUB_TOKEN is allowed to trigger.
+  on-release:
+    if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'daemon/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write # workflow_dispatch of this workflow, nothing else
+    steps:
+      - name: Run site-pages on the default branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+        run: gh workflow run site-pages.yml --ref "$BRANCH"
+
+  build:
+    if: github.event_name != 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read # checkout and the assets of the latest release
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: install.sh of the latest release, checked
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: sh scripts/fetch-install-sh.sh "$RUNNER_TEMP/release"
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+
+      - name: No placeholders left in the pages
+        run: |
+          if grep -rlE '%[A-Z]+_[A-Z_]+%' dist --include='*.html'; then
+            echo "::error title=placeholders::doc placeholders left in the pages above (DOC_VARS in src/config.ts)"
+            exit 1
+          fi
+
+      - name: install.sh into the site root
+        run: |
+          if [ -f "$RUNNER_TEMP/release/install.sh" ]; then
+            cp "$RUNNER_TEMP/release/install.sh" dist/install.sh
+            sha256sum dist/install.sh
+          fi
+
+      - name: security.txt is in the build
+        run: test -s dist/.well-known/security.txt
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site/dist
+          # The action drops every name starting with a dot unless this is true, so
+          # dist/.well-known/security.txt never reached Pages. .git and .github stay excluded.
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write # publish the artifact
+      id-token: write # OIDC token deploy-pages shows to Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

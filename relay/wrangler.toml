@@ -1,0 +1,26 @@
+# WardenClaw relay (protocol/README.md): one Durable Object per supervisor channel.
+# Secrets (wrangler secret put, never in this file): APNS_KEY_P8, APNS_KEY_ID, APNS_TEAM_ID,
+# APNS_TOPIC (the app's bundle id); FCM_SERVICE_ACCOUNT (the JSON of a Firebase service account).
+# Without them the relay routes and queues; nothing wakes a closed app.
+name = "wardenclaw-relay"
+main = "src/index.ts"
+# the newest date the workerd of @cloudflare/vitest-pool-workers supports; bump with it
+compatibility_date = "2026-08-15"
+workers_dev = false
+
+[[routes]]
+pattern = "relay.wardenclaw.dev"
+custom_domain = true
+
+[durable_objects]
+bindings = [{ name = "CHANNEL", class_name = "Channel" }]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Channel"]
+
+[vars]
+# Limits of protocol/README.md section 13; strings because vars are strings.
+FRAME_MAX_BYTES = "65536"
+QUEUE_MAX = "200"
+QUEUE_TTL_MS = "86400000"

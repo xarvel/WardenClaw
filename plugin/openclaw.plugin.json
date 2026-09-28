@@ -1,0 +1,162 @@
+{
+  "id": "wardenclaw-gate",
+  "name": "WardenClaw Gate",
+  "description": "Cryptographic execution gate: every executing tool call requires an Ed25519 signature from a paired WardenClaw device. Stage A: observe mode (monitoring only).",
+  "version": "0.1.0",
+  "categories": [
+    "security"
+  ],
+  "activation": {
+    "onStartup": true
+  },
+  "configGroups": [
+    {
+      "id": "gate",
+      "title": "Gate",
+      "order": 10,
+      "properties": [
+        "mode",
+        "trustedDeviceIds",
+        "tools",
+        "ttlMs",
+        "exemptAgents"
+      ]
+    },
+    {
+      "id": "auth",
+      "title": "Authentication",
+      "order": 20,
+      "properties": [
+        "requireDeviceToken",
+        "tsWindowMs",
+        "requestToken",
+        "devices"
+      ]
+    },
+    {
+      "id": "storage",
+      "title": "Storage",
+      "order": 30,
+      "properties": [
+        "stateDir",
+        "logAllTools"
+      ]
+    },
+    {
+      "id": "wardend",
+      "title": "wardend relay",
+      "order": 40,
+      "properties": [
+        "relay",
+        "wardendSocket",
+        "relayPreverify"
+      ]
+    }
+  ],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "mode": {
+        "type": "string",
+        "enum": [
+          "observe",
+          "enforce"
+        ],
+        "default": "observe",
+        "description": "observe: hook only records calls without blocking anyone. enforce: call waits for a signed allow from a trusted device; otherwise blocked (fail-closed)."
+      },
+      "trustedDeviceIds": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "description": "deviceIds of paired devices whose signatures are accepted (e.g. wardenclaw-app)."
+      },
+      "tools": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Tool names (toolName) or toolKind values that pass through the gate. Empty = default list of executing tools."
+      },
+      "ttlMs": {
+        "type": "integer",
+        "minimum": 1000,
+        "maximum": 3600000,
+        "default": 120000,
+        "description": "How long to wait for a signed decision in enforce mode."
+      },
+      "tsWindowMs": {
+        "type": "integer",
+        "minimum": 1000,
+        "maximum": 600000,
+        "default": 60000,
+        "description": "Maximum allowed difference between the signature ts and the gateway clock."
+      },
+      "exemptAgents": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "description": "agentIds the gate ignores (empty by default; each entry is a gap -- owner decides)."
+      },
+      "requireDeviceToken": {
+        "type": "boolean",
+        "default": true,
+        "description": "HTTP routes additionally require Authorization: Bearer <device-token> (matched against the gateway paired device storage)."
+      },
+      "requestToken": {
+        "type": "string",
+        "description": "Shared secret for POST /wardenclaw/request (external callers: Claude Code PreToolUse hook). Not set = route disabled."
+      },
+      "devices": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "deviceId": {
+              "type": "string"
+            },
+            "publicKey": {
+              "type": "string",
+              "description": "Ed25519 public key, base64url raw 32 bytes (as in device.pair.list)."
+            }
+          },
+          "required": [
+            "deviceId",
+            "publicKey"
+          ]
+        },
+        "description": "Static key directory (overrides the gateway storage)."
+      },
+      "stateDir": {
+        "type": "string",
+        "description": "Plugin state directory. Default: <gateway stateDir>/wardenclaw-gate."
+      },
+      "logAllTools": {
+        "type": "boolean",
+        "default": true,
+        "description": "Log every tool call seen by the hook (even those not gated). Useful in stage A to understand native tool coverage."
+      },
+      "relay": {
+        "type": "boolean",
+        "default": true,
+        "description": "Proxy wardend supervisor exec entries (seccomp execve gate) through the plugin routes when its unix socket is present. Signature verification is done by wardend."
+      },
+      "wardendSocket": {
+        "type": "string",
+        "default": "~/.wardend/wardend.sock",
+        "description": "Path to the wardend unix socket (JSON-RPC)."
+      },
+      "relayPreverify": {
+        "type": "boolean",
+        "default": true,
+        "description": "Additionally verify exec entry decision signatures in the plugin before forwarding (early rejection; wardend is the final authority)."
+      }
+    }
+  }
+}

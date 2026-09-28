@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: Apache-2.0
+# app/ (Expo): typecheck and core tests. Native builds go through EAS (app/scripts/eas_build.sh),
+# not CI. Dependencies are installed with --ignore-scripts: the postinstall hooks patch ONNX Runtime
+# and download llama.rn native artifacts, which only a native build needs.
+name: app
+
+on:
+  push:
+    branches: [main]
+    paths: ["app/**", "protocol/**", ".github/workflows/app.yml"]
+  pull_request:
+    paths: ["app/**", "protocol/**", ".github/workflows/app.yml"]
+
+permissions: {}
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Test
+        run: npm test

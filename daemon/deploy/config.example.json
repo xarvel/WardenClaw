@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "policy_mode": "tripwire",
+  "ticket_ttl": "120s",
+  "ts_window": "60s",
+  "max_pending": 64,
+  "linger": "2s",
+  "toctou_roots": "stop",
+  "toctou_service": "off",
+  "relay_url": "wss://relay.wardenclaw.dev",
+  "pair_code_ttl": "5m",
+  "gateway_db": "off",
+  "root_exec": {"enabled": false, "socket": "", "group": "", "timeout": "10m"},
+  "trusted_devices": []
+}

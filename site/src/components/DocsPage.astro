@@ -1,0 +1,86 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import type { Dict } from "../i18n/en";
+import { featureText } from "../config";
+
+interface Heading { depth: number; slug: string; text: string }
+interface Props {
+  t: Dict;
+  frontmatter: { title: string; description: string };
+  headings: Heading[];
+  /** Slug under /docs/ ("" is the overview at /docs/). */
+  slug?: string;
+  /** Path under the language root for a page outside /docs/ (the security policy). */
+  page?: string;
+}
+const { t, headings, slug = "" } = Astro.props;
+// Title and description may carry <!-- feature:NAME --> spans (src/config.ts, FEATURES).
+const frontmatter = {
+  title: featureText(Astro.props.frontmatter.title),
+  description: featureText(Astro.props.frontmatter.description),
+};
+const page = Astro.props.page ?? `docs/${slug}`;
+const path = `${t.path}${page}`;
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const tocLabel = t.nav.toc;
+const current = page === "docs/install/" ? "install" : page.startsWith("docs/") ? "docs" : undefined;
+---
+<Base t={t} path={path} title={`${frontmatter.title} · WardenClaw`} description={frontmatter.description}>
+  <Header t={t} home={t.path} current={current} />
+  <div class="wrap docs-grid">
+    <aside class="docs-toc">
+      {t.docsNav.groups.map((g) => (
+        <nav aria-label={g.title}>
+          <p class="docs-toc-title">{g.title}</p>
+          <ul>
+            {g.pages.map((p) => (
+              <li><a href={`${t.path}${p.path}`} aria-current={p.path === page ? "page" : undefined}>{p.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+      <nav aria-label={tocLabel}>
+        <p class="docs-toc-title">{tocLabel}</p>
+        <ul>
+          {toc.map((h) => <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}
+        </ul>
+      </nav>
+    </aside>
+    {/* Below 960 px the sidebar above is hidden: the same links, folded, so the page starts on the first screen. */}
+    <div class="docs-mnav">
+      <details>
+        <summary>{t.nav.docsMenu}</summary>
+        <div>
+          {t.docsNav.groups.map((g) => (
+            <nav aria-label={g.title}>
+              <p class="docs-toc-title">{g.title}</p>
+              <ul>
+                {g.pages.map((p) => (
+                  <li><a href={`${t.path}${p.path}`} aria-current={p.path === page ? "page" : undefined}>{p.label}</a></li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
+      </details>
+      {toc.length > 0 && (
+        <details>
+          <summary>{tocLabel}</summary>
+          <div>
+            <nav aria-label={tocLabel}>
+              <ul>
+                {toc.filter((h) => h.depth === 2).map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+              </ul>
+            </nav>
+          </div>
+        </details>
+      )}
+    </div>
+    <main id="main" class="prose">
+      <slot />
+    </main>
+  </div>
+  <Footer t={t} />
+</Base>

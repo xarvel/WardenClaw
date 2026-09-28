@@ -1,0 +1,15 @@
+# Who may sign release tags (daemon/v*, app/v*, plugin/v*): OpenSSH allowed_signers format, see
+# "ALLOWED SIGNERS" in ssh-keygen(1). daemon/scripts/release.sh and sign-release.sh check every
+# release tag with `git verify-tag` against this file as of the previous release tag, so a signer
+# added here becomes trusted only from the release after the one that ships this change
+# (daemon/docs/release.md, "Signed Tags"). The file is under CODEOWNERS.
+#
+# One line per key: <principal> namespaces="git" <key type> <public key>
+# The key is the maintainer's SSH key on a hardware token, with a touch for every signature:
+#   ssh-keygen -t ed25519-sk -O resident -O verify-required -C wardenclaw-release-tags
+# Example line (not a real key):
+#   maintainer@users.noreply.github.com namespaces="git" sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAA...
+#
+# Arthur Valiullin, YubiKey resident key (application ssh:wardenclaw-tags), added 2026-09-28,
+# SHA256:hhuFcBXAihhKPYHng/mVqndc4wnBOBCmHr0PeZkVof8
+valiullin.arthur@gmail.com namespaces="git" sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGxTinyg9B3bwYRdW5tumYZzsCoYgA1UB00FMFKWsUO+AAAAE3NzaDp3YXJkZW5jbGF3LXRhZ3M= wardenclaw-release-tags
