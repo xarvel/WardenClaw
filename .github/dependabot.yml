@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dependabot version updates, weekly: the Go module of the daemon, the npm packages of the app,
+# the plugin and the site, and the actions of the workflows (pinned by commit SHA; Dependabot
+# moves the SHA and the version comment together). Minor and patch updates of one ecosystem come
+# as one pull request, a major update as its own, at most three open pull requests per ecosystem.
+# The pull requests go through the same gates as any other: the component workflows test them,
+# the dco check passes (Dependabot signs its commits off) and a person merges them. This keeps
+# the toolchain line of go.mod and the action SHAs from falling behind between releases; the
+# reachable vulnerabilities themselves are found by govulncheck (daemon.yml, release-daemon.yml).
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /daemon
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      go-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      app-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    # The Expo SDK pins react, react-native and the native modules to exact versions (expo's
+    # bundledNativeModules.json; react must match the renderer inside react-native to the patch):
+    # they move only with the SDK, through `npx expo install --fix`, never by Dependabot.
+    # TypeScript majors are a toolchain decision; @types/react patches are fine.
+    ignore:
+      - dependency-name: "expo*"
+      - dependency-name: "@expo/*"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+      - dependency-name: "@react-native/*"
+      - dependency-name: "@react-native-community/*"
+      - dependency-name: "@react-native-async-storage/*"
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: npm
+    directory: /plugin
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      plugin-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /site
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      site-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]

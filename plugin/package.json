@@ -1,0 +1,29 @@
+{
+  "name": "wardenclaw-gate",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "OpenClaw plugin: cryptographic execution gate signed by the WardenClaw device (stage A: observe)",
+  "type": "module",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "verify-journal": "node scripts/verify-journal.mjs"
+  },
+  "devDependencies": {
+    "@noble/ed25519": "^3.2.0"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.9.6"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  }
+}

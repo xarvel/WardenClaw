@@ -1,0 +1,7 @@
+# Each component keeps its own .gitignore (daemon/, app/, plugin/, site/); these rules are common.
+node_modules/
+.DS_Store
+*.log
+.idea/
+.vscode/
+*.swp

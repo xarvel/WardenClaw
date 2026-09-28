@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: Apache-2.0
+# daemon/ (wardend, wardenctl): vet, tests and govulncheck. Also runs when the protocol vectors
+# change, because the Go tests read protocol/vectors/ directly.
+name: daemon
+
+on:
+  push:
+    branches: [main]
+    paths: ["daemon/**", "protocol/**", ".github/workflows/daemon.yml"]
+  pull_request:
+    paths: ["daemon/**", "protocol/**", ".github/workflows/daemon.yml"]
+
+permissions: {}
+
+concurrency:
+  group: daemon-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: daemon
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: daemon/go.mod
+          cache: false
+      - name: Vet
+        run: |
+          go vet ./...
+          GOARCH=arm64 go vet ./...
+          go vet -tags hwkey ./...
+      - name: Test
+        run: go test -p 1 ./...
+      # The second factor (YubiKey) is left out of the release but kept building and passing its
+      # tests under the tag hwkey (daemon/docs/hwkey.md).
+      - name: Test with the second factor
+        run: go test -tags hwkey -p 1 ./...
+
+  # Known vulnerabilities of the Go standard library and of the dependencies: the check the release
+  # starts with (release-daemon.yml, job vulncheck), run on every push and pull request so that a
+  # reachable one (exit 3) shows up on the day of the patch, not on release day. The usual fix is a
+  # newer toolchain line in go.mod (docs/release.md). Independent of the tests: neither waits for
+  # the other. The macOS targets of wardenctl are checked at release time only. A job of its own,
+  # without write permissions: it runs a tool downloaded at check time (verified against
+  # sum.golang.org by the go command).
+  vulncheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: daemon
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: daemon/go.mod
+          cache: false
+      - name: Go from the toolchain line of go.mod
+        run: |
+          want=$(sed -n 's/^toolchain //p' go.mod)
+          got=$(go env GOVERSION)
+          [ -n "$want" ] && [ "$got" = "$want" ] || { echo "::error::Go $got, go.mod asks for ${want:-nothing}"; exit 1; }
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+          gvc=$(go env GOPATH)/bin/govulncheck
+          GOOS=linux GOARCH=amd64 "$gvc" ./...
+          GOOS=linux GOARCH=arm64 "$gvc" ./...

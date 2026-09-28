@@ -1,0 +1,64 @@
+WardenClaw app
+Copyright (C) 2026 The WardenClaw Authors
+
+The WardenClaw app is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version (see LICENSE), with an additional permission for
+distribution through app stores under section 7 of the GPL (see
+COPYING.exceptions).
+
+The protocol specification and test vectors the app implements are in
+protocol/ at the root of the repository, under the Apache License,
+Version 2.0.
+
+"WardenClaw" and the WardenClaw logo and app icons are trademarks of The
+WardenClaw Authors; the app icons in assets/ are not covered by the GPL.
+See TRADEMARKS.md at the root of the repository.
+
+Third-party components included in the app (APK)
+------------------------------------------------
+
+This list names the notable components. Every npm package and Gradle
+library keeps its own license and copyright notices, which are part of
+the corresponding source (node_modules, Gradle caches) and must be shown
+to users of a distributed build (an "Open source licenses" screen).
+
+yubikit-android 3.1.0 (com.yubico.yubikit:android, :fido, :core)
+  Apache License 2.0, Copyright (C) 2019-2025 Yubico.
+  https://github.com/Yubico/yubikit-android
+
+@huggingface/tokenizers 0.2.0
+  Apache License 2.0, Hugging Face.
+
+llama.rn 0.13.0-rc.6
+  MIT, Copyright (c) 2023 Jhen-Jie Hong.
+  Bundles llama.cpp / ggml: MIT, Copyright (c) 2023-2026 The ggml authors;
+  codec.cpp: MIT, Copyright (c) 2026 codec.cpp contributors;
+  OpenCL-Headers: Apache License 2.0, The Khronos Group Inc.
+
+onnxruntime-react-native 1.24.3 and onnxruntime-android (ONNX Runtime)
+  MIT, Copyright (c) Microsoft Corporation.
+  scripts/patch-ort.mjs modifies these files at install time, as the MIT
+  license permits.
+
+Expo SDK 57 (expo and expo-* modules)
+  MIT, Copyright (c) 2015-present 650 Industries, Inc. (aka Expo).
+
+React Native 0.86
+  MIT, Copyright (c) Meta Platforms, Inc. and affiliates.
+
+@noble/ed25519 2.3.0, @noble/hashes 1.8.0
+  MIT, Copyright (c) 2019, 2022 Paul Miller (https://paulmillr.com).
+
+@expo/vector-icons
+  MIT; the icon fonts it ships keep their own licenses (for example
+  Font Awesome Free: icons CC BY 4.0, font SIL OFL 1.1).
+
+Model weights
+-------------
+
+No model weights are included in this repository or in the APK. The
+Experimental local judge downloads them from Hugging Face only when the
+user asks, and verifies their SHA-256. Their licenses are listed in the
+README (section "Experimental: local judge models").

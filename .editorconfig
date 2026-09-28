@@ -1,0 +1,26 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.go]
+indent_style = tab
+
+# shell scripts: keep the style of the file (daemon/install.sh uses tabs, others spaces)
+[*.sh]
+indent_style = unset
+indent_size = unset
+
+[{Makefile,*.mk}]
+indent_style = tab
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{kt,kts,gradle,java,c,h,py}]
+indent_size = 4

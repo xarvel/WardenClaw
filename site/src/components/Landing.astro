@@ -1,0 +1,335 @@
+---
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import type { Dict } from "../i18n/en";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { REPO_PUBLIC, WARDEND_URL, GATE_URL, APP_URL, INSTALL_CMD } from "../config";
+import { SCOPE, code } from "../claims";
+
+interface Props { t: Dict }
+const { t } = Astro.props;
+const scope = SCOPE[t.lang as keyof typeof SCOPE];
+
+// Brand assets are optional: if the brand package dropped a file into public/brand,
+// it is used; otherwise the built-in placeholder is shown.
+const pub = (p: string) => existsSync(join(process.cwd(), "public", "brand", p));
+const heroImg = ["hero.svg", "hero.webp", "hero.jpg", "hero.png"].find(pub);
+const hasAppShot = pub("app-feed.webp");
+const repoLinks: Record<string, string> = { wardend: WARDEND_URL, gate: GATE_URL, app: APP_URL };
+const arrowIcon = `<svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg>`;
+---
+<Header t={t} />
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">{t.hero.eyebrow}</p>
+        <h1 id="hero-title">{t.hero.title}</h1>
+        <p class="lead">{t.hero.sub}</p>
+        <ul class="hero-points">
+          {t.hero.points.map((p) => <li set:html={p} />)}
+        </ul>
+        <p class="slogan">{t.hero.slogan}</p>
+        {/* Both buttons lead to pages of this site at any REPO_PUBLIC; GitHub is the header pill. */}
+        <div class="cta">
+          <a class="btn btn-primary" href={`${t.path}docs/try/`}>{t.hero.ctaTry}</a>
+          <a class="btn btn-ghost" href="#how">{t.hero.ctaHow}<Fragment set:html={arrowIcon} /></a>
+        </div>
+        <p class="hero-note">{t.hero.facts}</p>
+        {!REPO_PUBLIC && <p class="hero-note">{t.hero.note}</p>}
+      </div>
+      <div class="hero-art">
+        {heroImg ? (
+          <img class="hero-img" src={`/brand/${heroImg}`} alt={t.hero.imgAlt} width="1600" height="900" fetchpriority="high" />
+        ) : (
+          <figure class="phone" role="img" aria-label={t.hero.mock.label}>
+            <div class="phone-screen" aria-hidden="true">
+              <div class="phone-bar"><span></span></div>
+              <div class="mock-card">
+                <span class="mock-badge">{t.hero.mock.badge}</span>
+                <p class="mock-title">{t.hero.mock.title}</p>
+                <code class="mock-cmd">{t.hero.mock.cmd}</code>
+                <p class="mock-meta">{t.hero.mock.meta}</p>
+                <div class="mock-risk"><span>{t.hero.mock.risk}</span><span class="bar"><i></i></span></div>
+                <div class="mock-btns"><span class="mock-allow">{t.hero.mock.allow}</span><span class="mock-deny">{t.hero.mock.deny}</span></div>
+                <p class="mock-foot">{t.hero.mock.foot}</p>
+              </div>
+            </div>
+          </figure>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section id="layers" class="layers" aria-labelledby="layers-title">
+    <div class="wrap">
+      <p class="kicker">{t.layers.kicker}</p>
+      <h2 id="layers-title" class="section-title">{t.layers.title}</h2>
+      <div class="grid grid-3 layer-grid">
+        {t.layers.items.map((l, i) => (
+          <article class={`card layer${i === t.layers.items.length - 1 ? " layer-us" : ""}`}>
+            <h3>{l.name}</h3>
+            <p class="layer-who">{l.who}</p>
+            <p class="layer-k">{t.layers.covers}</p>
+            <p>{l.covers}</p>
+            <p class="layer-k">{t.layers.open}</p>
+            <p>{l.open}</p>
+          </article>
+        ))}
+      </div>
+      <p class="layer-conclusion">{t.layers.conclusion}</p>
+    </div>
+  </section>
+
+  <section id="scope" aria-labelledby="scope-title">
+    <div class="wrap">
+      <p class="kicker">{t.scope.kicker}</p>
+      <h2 id="scope-title" class="section-title">{t.scope.title}</h2>
+      <div class="scope-grid">
+        <div class="card scope-closes">
+          <h3 class="sub-h">{t.scope.closesTitle}</h3>
+          <ul class="checklist">
+            {scope.closes.map((s) => <li><strong>{s.title}</strong> <Fragment set:html={code(s.text)} /></li>)}
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="sub-h">{t.scope.notClosedTitle}</h3>
+          <ul class="openlist">
+            {scope.notClosed.map((s) => <li><strong>{s.title}</strong> <Fragment set:html={code(s.text)} /></li>)}
+          </ul>
+        </div>
+      </div>
+      <p class="pill-row">
+        <a class="pill pill-accent" href={`${t.path}docs/threat-model/`}>{t.scope.threatLink}</a>
+        <a class="pill" href={`${t.path}${t.scope.linkPath}`}>{t.scope.link}</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="problem" aria-labelledby="problem-title">
+    <div class="wrap">
+      <p class="kicker">{t.problem.kicker}</p>
+      <h2 id="problem-title" class="section-title">{t.problem.title}</h2>
+      <div class="grid grid-2" style="margin-top:40px">
+        {t.problem.items.map((it) => (
+          <article class="card">
+            <h3>{it.title}</h3>
+            <p set:html={it.text} />
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <p class="kicker">{t.how.kicker}</p>
+      <h2 id="how-title" class="section-title">{t.how.title}</h2>
+      <p class="lead" set:html={t.how.lead} />
+      <ol class="flow" aria-label={t.how.flowLabel}>
+        {t.how.flow.map((f) => (
+          <li><strong>{f.t}</strong><span set:html={f.d} /></li>
+        ))}
+      </ol>
+      <ol class="steps grid grid-4">
+        {t.how.steps.map((s) => (
+          <li class="card">
+            <h3>{s.title}</h3>
+            <p set:html={s.text} />
+          </li>
+        ))}
+      </ol>
+      <p class="pill-row how-more">
+        <a class="pill" href={`${t.path}docs/how-it-works/`}>{t.how.detailLink}</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="modes" aria-labelledby="modes-title">
+    <div class="wrap">
+      <p class="kicker">{t.modes.kicker}</p>
+      <h2 id="modes-title" class="section-title">{t.modes.title}</h2>
+      <div class="grid grid-3" style="margin-top:40px">
+        {t.modes.items.map((m, i) => (
+          <article class="card mode">
+            <span class="mode-idx">0{i + 1}</span>
+            <span class="tag">{m.tag}</span>
+            <h3>{m.name}</h3>
+            <p set:html={m.text} />
+          </article>
+        ))}
+      </div>
+      <figure class="switches" aria-labelledby="switches-title">
+        <figcaption id="switches-title" class="sub-h">{t.modes.switchesTitle}</figcaption>
+        <div class="switch-grid">
+          {t.modes.switches.map((s) => (
+            <div class="switch">
+              <p class="switch-name">{s.name}</p>
+              <p class="switch-where" set:html={s.where} />
+              <ul>
+                {s.opts.map((o) => (
+                  <li class={o.def ? "is-def" : ""}>
+                    <span class="switch-v">{o.v}</span>
+                    {o.def && <span class="switch-def">{t.modes.defaultTag}</span>}
+                    <span class="switch-t" set:html={o.text} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p class="switch-note">{t.modes.switchesNote}</p>
+      </figure>
+      <p class="note">{t.modes.note}</p>
+    </div>
+  </section>
+
+  <section id="security" aria-labelledby="security-title">
+    <div class="wrap">
+      <p class="kicker">{t.security.kicker}</p>
+      <h2 id="security-title" class="section-title">{t.security.title}</h2>
+      <div class="sec-grid">
+        <div class="card">
+          <h3 class="sub-h">{t.security.failTitle}</h3>
+          <ul class="checklist">
+            {t.security.fail.map((f) => <li set:html={f} />)}
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="sub-h">{t.security.toctouTitle}</h3>
+          <p set:html={t.security.toctouText} />
+          <div class="table-wrap toctou" tabindex="0" role="region" aria-label={t.security.toctouCaption}>
+            <table>
+              <caption>{t.security.toctouCaption}</caption>
+              <thead><tr>{t.security.toctouHead.map((h, i) => <th scope="col" class={i ? "num" : ""}>{h}</th>)}</tr></thead>
+              <tbody>
+                {t.security.toctouRows.map((r) => (
+                  <tr class={r[0] === "stop" ? "row-hl" : ""}>
+                    <th scope="row"><code>{r[0]}</code></th>
+                    <td class="num">{r[1]}</td>
+                    <td class={`num${r[2] === "0" ? " zero" : ""}`}>{r[2]}</td>
+                    <td class="num">{r[3]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="font-size:15px" set:html={t.security.toctouAfter} />
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3 class="sub-h">{t.security.tamperTitle}</h3>
+        <p set:html={t.security.tamperText} />
+        <code class="mock-cmd">{INSTALL_CMD}</code>
+        <p class="muted" style="font-size:15px">{t.security.installNote}</p>
+        <p class="pill-row">
+          <a class="pill pill-accent" href={`${t.path}docs/install/`}>{t.security.installLink}</a>
+          <a class="pill" href={`${t.path}docs/tamper-resistance/`}>{t.security.tamperLink}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="numbers" aria-labelledby="numbers-title">
+    <div class="wrap">
+      <p class="kicker">{t.numbers.kicker}</p>
+      <h2 id="numbers-title" class="section-title">{t.numbers.title}</h2>
+      <dl class="grid grid-4" style="margin:40px 0 0">
+        {t.numbers.items.map((n) => (
+          <div class="card stat">
+            <dt class="v">{n.value}</dt>
+            <dd style="margin:0"><p class="muted" set:html={n.label} /></dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section id="compare" aria-labelledby="compare-title">
+    <div class="wrap">
+      <p class="kicker">{t.compare.kicker}</p>
+      <h2 id="compare-title" class="section-title">{t.compare.title}</h2>
+      <div class="table-wrap compare" style="margin-top:40px" tabindex="0" role="region" aria-label={t.compare.caption}>
+        <table>
+          <caption class="sr-only">{t.compare.caption}</caption>
+          <thead>
+            <tr>
+              {t.compare.head.map((h, i) =>
+                i === 0 ? <td></td> : <th scope="col" class={i === 1 ? "us" : ""}>{h}</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {t.compare.rows.map((r) => (
+              <tr>
+                <th scope="row">{r[0]}</th>
+                {r.slice(1).map((c, i) => <td class={i === 0 ? "us" : ""} set:html={c} />)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="note">{t.compare.note}</p>
+    </div>
+  </section>
+
+  <section id="components" aria-labelledby="components-title">
+    <div class="wrap">
+      <p class="kicker">{t.components.kicker}</p>
+      <h2 id="components-title" class="section-title">{t.components.title}</h2>
+      <div class="grid grid-3" style="margin-top:40px">
+        {t.components.items.map((c) => (
+          <article class="card comp">
+            <h3>{c.name} <span class="lang">{c.lang}</span></h3>
+            <p set:html={c.text} />
+            <p class="repo">{REPO_PUBLIC ? <a href={repoLinks[c.link]}>{t.components.sourceOf.replace("{name}", c.name)}</a> : t.repoClosed}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="status" aria-labelledby="status-title">
+    <div class="wrap">
+      <p class="kicker">{t.status.kicker}</p>
+      <h2 id="status-title" class="section-title">{t.status.title}</h2>
+      <div class={hasAppShot ? "status-wrap" : ""}>
+      {hasAppShot && (
+        <figure class="app-shot">
+          <img src="/brand/app-feed.webp" alt={t.status.shotAlt} width="410" height="800" loading="lazy" decoding="async" />
+          <figcaption>{t.status.shotCaption}</figcaption>
+        </figure>
+      )}
+      <div class="grid grid-2 status-grid" style="margin-top:40px">
+        <div class="card">
+          <h3 class="sub-h">{t.status.doneTitle}</h3>
+          <ul>{t.status.done.map((d) => <li>{d}</li>)}</ul>
+        </div>
+        <div class="card next">
+          <h3 class="sub-h">{t.status.nextTitle}</h3>
+          <ul>{t.status.next.map((d) => <li>{d}</li>)}</ul>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <p class="kicker">{t.faq.kicker}</p>
+      <h2 id="faq-title" class="section-title">{t.faq.title}</h2>
+      <div class="faq" style="margin-top:32px">
+        {t.faq.items.map((f, i) => (
+          <details open={i < 2}>
+            <summary>{f.q}</summary>
+            <p set:html={f.a} />
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</main>
+
+<Footer t={t} home="" />

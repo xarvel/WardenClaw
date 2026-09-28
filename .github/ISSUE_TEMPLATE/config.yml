@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# The "New issue" chooser: no blank issues, so every report goes through a form (bug.yml) or one
+# of the links below. A vulnerability never goes into a public issue: SECURITY.md has the private
+# channel, and the bug form repeats that.
+blank_issues_enabled: false
+contact_links:
+  - name: Report a vulnerability (privately)
+    url: https://github.com/xarvel/WardenClaw/blob/main/SECURITY.md
+    about: A way around the gate, a forged approval, a key leak. Not a public issue. SECURITY.md has the private channel, what to include and what to expect.
+  - name: User documentation
+    url: https://wardenclaw.dev/docs/
+    about: Install, connect the phone, the CLI, policy modes, notifications, what the gate does and does not close.

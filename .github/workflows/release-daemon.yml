@@ -1,0 +1,168 @@
+# SPDX-License-Identifier: Apache-2.0
+# Tag daemon/v* -> govulncheck, tests, reproducible build, provenance attestation, DRAFT release of
+# wardend.
+# Monorepo tags are per component: daemon/vX.Y.Z is also the tag form Go expects for a module in
+# the daemon/ subdirectory, and it leaves v*/app/v*/plugin/v* free for the other parts.
+# The maintainer publishes the draft as latest after looking at it (daemon/docs/release.md);
+# releases are not signed, the installer and the site check the files against checksums.txt.
+#
+# Code of the tagged commit (tests, release.sh) runs only in jobs with a read-only token. The jobs
+# that can write (the attestation, the draft) run no project code: no checkout, they take the
+# files the build job left as an artifact. The draft job waits for a reviewer in the "release"
+# environment, which the repository settings must define with required reviewers and tags
+# daemon/v* only (daemon/docs/release.md, section "GitHub Settings").
+name: release-daemon
+
+on:
+  push:
+    tags: ["daemon/v*"]
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Known vulnerabilities of the Go standard library and of the dependencies, for every target of
+  # the release. A reachable one (exit 3) stops the release before anything is built; the usual fix
+  # is a newer toolchain line in go.mod (docs/release.md). A job of its own, without write
+  # permissions or an OIDC token: it runs a tool downloaded at release time (checked against
+  # sum.golang.org by the go command).
+  vulncheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: daemon
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: daemon/go.mod
+          cache: false
+
+      - name: Go from the toolchain line of go.mod
+        run: |
+          want=$(sed -n 's/^toolchain //p' go.mod)
+          got=$(go env GOVERSION)
+          [ -n "$want" ] && [ "$got" = "$want" ] || { echo "::error::Go $got, go.mod asks for ${want:-nothing}"; exit 1; }
+
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+          gvc=$(go env GOPATH)/bin/govulncheck
+          GOOS=linux GOARCH=amd64 "$gvc" ./...
+          GOOS=linux GOARCH=arm64 "$gvc" ./...
+          GOOS=darwin GOARCH=arm64 "$gvc" ./cmd/wardenctl
+          GOOS=darwin GOARCH=amd64 "$gvc" ./cmd/wardenctl
+
+  # Tests and the reproducible build: the code of the tagged commit runs here, with a read-only
+  # token and no OIDC token. Its only output is the dist/ artifact.
+  build:
+    needs: vulncheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: daemon
+    steps:
+      # All history and tags: release.sh checks the tag's signature against allowed_signers of the
+      # release before (scripts/release-checks.sh). The tag itself is fetched as the annotated object.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: daemon/go.mod
+          cache: false
+
+      # setup-go takes the toolchain line, but falls back to the go line when GOTOOLCHAIN=local is
+      # set in the workflow env; the maintainer rebuilds with the toolchain line (docs/release.md).
+      - name: Go from the toolchain line of go.mod
+        run: |
+          want=$(sed -n 's/^toolchain //p' go.mod)
+          got=$(go env GOVERSION)
+          [ -n "$want" ] && [ "$got" = "$want" ] || { echo "::error::Go $got, go.mod asks for ${want:-nothing}"; exit 1; }
+
+      - name: Test
+        run: |
+          go vet ./...
+          go test -p 1 ./...
+
+      # The tag checks run first: signed by allowed_signers, HEAD is the tag, empty git status.
+      - name: Build
+        run: scripts/release.sh "$GITHUB_REF_NAME"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: daemon/dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  # Provenance attestation over the files of the build job. No checkout, no code of the project
+  # runs next to the OIDC token.
+  attest:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      id-token: write # Sigstore certificate for the provenance attestation
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: dist
+
+      - name: Provenance attestation
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-checksums: dist/checksums.txt
+
+  # The draft release: the only job with write access to the repository. No checkout, no code of
+  # the project; it uploads the files listed in the signed-to-be checksums.txt and nothing else,
+  # after a reviewer approves the "release" environment.
+  draft:
+    needs: [build, attest]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: release
+    permissions:
+      contents: write # create the draft release
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: dist
+
+      - name: Draft release
+        working-directory: dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -- wardend_linux_amd64.tar.gz wardend_linux_arm64.tar.gz wardenctl_darwin_arm64.tar.gz \
+            wardenctl_darwin_amd64.tar.gz install.sh
+          if [ -f release-key.txt ]; then set -- "$@" release-key.txt release-key.txt.minisig; fi
+          # checksums.txt lists exactly these files: nothing else from the build job is published.
+          listed=$(awk '{ print $2 }' checksums.txt | sort | tr '\n' ' ')
+          want=$(printf '%s\n' "$@" | sort | tr '\n' ' ')
+          [ "$listed" = "$want" ] || { echo "::error::checksums.txt lists: $listed; expected: $want"; exit 1; }
+          sha256sum -c --strict checksums.txt
+          version=${GITHUB_REF_NAME#daemon/}
+          gh release create "$GITHUB_REF_NAME" --draft --verify-tag --latest=false \
+            --title "wardend $version" \
+            --notes "Draft. Publish it as latest to make it installable (daemon/docs/release.md)." \
+            "$@" checksums.txt

@@ -1,0 +1,5 @@
+node_modules/
+*.log
+journal-key.json
+journal.jsonl
+pending.json

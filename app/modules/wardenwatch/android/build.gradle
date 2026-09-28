@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.wardenclaw.modules'
+version = '0.1.0'
+
+android {
+  namespace "com.wardenclaw.modules.wardenwatch"
+  defaultConfig {
+    versionCode 1
+    versionName '0.1.0'
+  }
+}
+
+// Only react-android (HeadlessJsTaskContext, ReactHost): the service keeps JS timers alive
+// while the app is in the background. No third-party libraries and no Firebase.
+dependencies {
+  implementation 'com.facebook.react:react-android'
+}
