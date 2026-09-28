@@ -1,0 +1,101 @@
+{
+  "expo": {
+    "name": "WardenClaw",
+    "slug": "wardenclaw",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wardenclaw.app",
+      "deploymentTarget": "16.4",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NFCReaderUsageDescription": "NFC is only used to talk to your security key (YubiKey) when you approve a request."
+      },
+      "entitlements": {
+        "com.apple.developer.kernel.increased-memory-limit": true,
+        "com.apple.developer.kernel.extended-virtual-addressing": true,
+        "aps-environment": "development",
+        "com.apple.developer.usernotifications.time-sensitive": true
+      },
+      "privacyManifests": {
+        "NSPrivacyTracking": false,
+        "NSPrivacyTrackingDomains": [],
+        "NSPrivacyCollectedDataTypes": [],
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
+            "NSPrivacyAccessedAPITypeReasons": ["C617.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace",
+            "NSPrivacyAccessedAPITypeReasons": ["85F4.1", "E174.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+            "NSPrivacyAccessedAPITypeReasons": ["35F9.1"]
+          }
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0E1117",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "allowBackup": false,
+      "package": "com.wardenclaw.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "The camera is only used to read the pairing QR code from the server screen.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Face ID confirms that it is you who approves a command."
+        }
+      ],
+      "./modules/yubikey/plugin/withYubikey",
+      "./modules/wardenwatch/plugin/withWardenWatch",
+      "./plugins/withAppHardening",
+      "@bacons/apple-targets",
+      ["llama.rn", { "enableOpenCLAndHexagon": false }],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#0E1117"
+        }
+      ]
+    ],
+    "scheme": "wardenclaw",
+    "owner": "xarvel",
+    "extra": {
+      "eas": {
+        "projectId": "19ff6ec9-7e0e-4672-948c-b667281bebb2"
+      }
+    }
+  }
+}

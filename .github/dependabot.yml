@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dependabot version updates, weekly: the Go module of the daemon, the npm packages of the app,
+# the plugin and the site, and the actions of the workflows (pinned by commit SHA; Dependabot
+# moves the SHA and the version comment together). Minor and patch updates of one ecosystem come
+# as one pull request, a major update as its own, at most three open pull requests per ecosystem.
+# The pull requests go through the same gates as any other: the component workflows test them,
+# the dco check passes (Dependabot signs its commits off) and a person merges them. This keeps
+# the toolchain line of go.mod and the action SHAs from falling behind between releases; the
+# reachable vulnerabilities themselves are found by govulncheck (daemon.yml, release-daemon.yml).
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: /daemon
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      go-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      app-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    # The Expo SDK pins react, react-native and the native modules (expo's
+    # bundledNativeModules.json): they move only with the SDK, through `npx expo install --fix`,
+    # not by Dependabot. Patches stay allowed. TypeScript majors are a toolchain decision.
+    ignore:
+      - dependency-name: "expo*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@expo/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-native-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@react-native/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@react-native-community/*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: npm
+    directory: /plugin
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      plugin-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /site
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      site-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]

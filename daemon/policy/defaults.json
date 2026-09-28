@@ -1,0 +1,114 @@
+{
+  "deny_always": [
+    {
+      "id": "rm-no-preserve-root",
+      "argv0": "^rm$",
+      "argv_text": "(^| )--no-preserve-root( |$)",
+      "note": "rm --no-preserve-root"
+    },
+    {
+      "id": "rm-recursive-root",
+      "argv0": "^rm$",
+      "argv_text": "^\\S+( .*)? (-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)( .*)? (/|/\\*|~|~/|\\$HOME|/home|/home/[^/ ]+|/root|/etc|/usr|/var|/boot|/bin|/sbin|/lib|/lib64|/opt|/srv|/mnt|/mnt/[^/ ]+|/media)/?( |$)|^\\S+( .*)? (/|/\\*|~|/home|/home/[^/ ]+|/root|/etc|/usr|/var|/boot|/bin|/sbin|/lib|/opt|/srv|/mnt|/mnt/[^/ ]+)/?( .*)? (-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)( |$)",
+      "note": "rm -r/-rf on the filesystem root, $HOME, and system directories"
+    },
+    {
+      "id": "dd-to-device",
+      "argv0": "^dd$",
+      "argv_text": "(^| )of=/dev/",
+      "note": "dd of=/dev/..."
+    },
+    {
+      "id": "mkfs-and-partitioning",
+      "argv0": "^(mkfs(\\..+)?|mke2fs|mkswap|wipefs|sfdisk|fdisk|cfdisk|parted|sgdisk|blkdiscard)$",
+      "note": "filesystem creation, partitioning, and device wiping"
+    },
+    {
+      "id": "shred-device",
+      "argv0": "^shred$",
+      "argv_text": "(^| )/dev/",
+      "note": "shred on a device"
+    },
+    {
+      "id": "chmod-chown-recursive-root",
+      "argv0": "^(chmod|chown|chgrp)$",
+      "argv_text": "^\\S+( .*)? (-[a-zA-Z]*R[a-zA-Z]*|--recursive)( .*)? (/|/\\*|/home|/etc|/usr|/var|/boot|/bin|/lib)/?( |$)",
+      "note": "recursive chmod/chown on the root and system directories"
+    }
+  ],
+  "service_allow": [],
+  "delegating": [
+    {
+      "id": "session-detach",
+      "argv0": "^(setsid|daemon|start-stop-daemon|disown)$",
+      "note": "session/tree detach: descendants may become orphaned and lose contact with the root"
+    },
+    {
+      "id": "service-managers",
+      "argv0": "^(systemd-run|systemctl|service|busctl|dbus-send|gdbus|loginctl|machinectl)$",
+      "note": "execution moves into systemd/D-Bus, outside the wardend tree"
+    },
+    {
+      "id": "containers",
+      "argv0": "^(docker|podman|nerdctl|ctr|kubectl|lxc|lxc-attach|incus|firejail|bwrap|flatpak-spawn|distrobox|toolbox)$",
+      "note": "execution moves into the container daemon, outside the wardend tree"
+    },
+    {
+      "id": "multiplexers",
+      "argv0": "^(tmux|screen|zellij|abduco|dtach)$",
+      "note": "the command may run in an already-running multiplexer server outside the tree"
+    },
+    {
+      "id": "schedulers",
+      "argv0": "^(at|batch|crontab|anacron)$",
+      "note": "deferred launch outside the tree"
+    },
+    {
+      "id": "privilege-and-ns",
+      "argv0": "^(sudo|su|doas|pkexec|runuser|nsenter|unshare|chroot|setpriv|capsh)$",
+      "note": "privilege or namespace change"
+    },
+    {
+      "id": "remote",
+      "argv0": "^(ssh|mosh|rsh|scp|sftp)$",
+      "note": "execution on a remote host"
+    }
+  ],
+  "require_hardware": [],
+  "zones": {
+    "secret": [
+      {
+        "re": "(?i)^${ANY_HOME}/\\.ssh/",
+        "not": "(?i)^${ANY_HOME}/\\.ssh/(known_hosts|[^/]*\\.pub$)"
+      },
+      "(?i)^${ANY_HOME}/\\.gnupg(/|$)",
+      "(?i)^${ANY_HOME}/\\.wardend/supervisor\\.key",
+      "(?i)^/var/lib/wardend/supervisor\\.key",
+      "(?i)^${ANY_HOME}/\\.config/.*(token|credential|secret|password|\\.key$|\\.pem$|auth\\.json$)",
+      "(?i)^${ANY_HOME}/\\.(netrc|git-credentials|npmrc|pypirc)$",
+      "(?i)^${ANY_HOME}/\\.(aws|kube|docker)/(credentials|config|config\\.json)$",
+      "(?i)^/etc/(shadow|gshadow|sudoers)",
+      "(?i)/\\.env(\\.(local|production|prod|development|dev|test|staging))?$"
+    ],
+    "config": [
+      "^${ANY_HOME}/\\.(bashrc|bash_profile|profile|zshrc|zprofile|bash_logout|inputrc|pam_environment)$",
+      "^${ANY_HOME}/\\.config/(systemd|autostart|environment\\.d)(/|$)",
+      "^${ANY_HOME}/\\.local/bin(/|$)",
+      "^${ANY_HOME}/\\.nvm(/|$)",
+      "^${ANY_HOME}/\\.wardend(/|$)",
+      "^${ANY_HOME}/\\.ssh(/|$)",
+      "^/(etc|usr|bin|sbin|lib|lib64|boot|opt|var/spool/cron|var/lib/wardend)(/|$)"
+    ],
+    "scratch": [
+      "^(/tmp|/var/tmp|/dev/shm|/run/user/[0-9]+)(/|$)",
+      "^${ANY_HOME}/(\\.cache|\\.npm/_npx|\\.npm/_cacache|\\.npm/_logs|\\.gradle/caches|go/pkg/mod)(/|$)",
+      "^.*/(node_modules|dist|build|\\.expo|\\.next|target|__pycache__|\\.gradle|\\.test-build|\\.turbo|coverage|\\.venv|venv)(/|$)"
+    ],
+    "top": [
+      "^/(home|root|mnt|media|srv)?/?$",
+      "^/(mnt|media)/[^/]+/?$",
+      "^${ANY_HOME}/?$"
+    ]
+  },
+  "guard": "^(${ANY_HOME}/\\.local/bin|/usr/(local/)?s?bin)/(wardend|wardenctl)$"
+}

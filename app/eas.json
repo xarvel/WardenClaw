@@ -1,0 +1,68 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "production": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_WARDENCLAW_GATEWAY_URL": "unset",
+        "EXPO_PUBLIC_WARDENCLAW_MODEL_URL": "unset",
+        "EXPO_PUBLIC_WARDENCLAW_MODEL": "unset",
+        "EXPO_PUBLIC_WARDENCLAW_BENCH": "0",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_HARDWARE_KEY": "0",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_APPLE_WATCH": "0",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_PHONE_JUDGE": "0"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_WARDENCLAW_GATEWAY_URL": "unset",
+        "EXPO_PUBLIC_WARDENCLAW_MODEL_URL": "unset",
+        "EXPO_PUBLIC_WARDENCLAW_MODEL": "unset",
+        "EXPO_PUBLIC_WARDENCLAW_BENCH": "0",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_HARDWARE_KEY": "0",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_APPLE_WATCH": "0",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_PHONE_JUDGE": "0"
+      }
+    },
+    "bench": {
+      "extends": "preview",
+      "env": {
+        "EXPO_PUBLIC_WARDENCLAW_BENCH": "1",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_HARDWARE_KEY": "1",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_APPLE_WATCH": "1",
+        "EXPO_PUBLIC_WARDENCLAW_FEATURE_PHONE_JUDGE": "1",
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a",
+        "ORG_GRADLE_PROJECT_rnllamaVariants": "rnllama,rnllama_v8_2_dotprod_i8mm"
+      }
+    },
+    "simulator": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {}
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6816678552"
+      }
+    }
+  }
+}

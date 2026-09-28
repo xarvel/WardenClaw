@@ -1,0 +1,62 @@
+---
+import type { Dict } from "../i18n/en";
+import { REPO_PUBLIC, REPO_URL } from "../config";
+
+interface Props {
+  t: Dict;
+  /** "" on the landing page (same-page anchors); the landing path elsewhere. */
+  home?: string;
+}
+const { t, home = t.path } = Astro.props;
+const d = `${t.path}docs/`;
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-brand">
+        <a class="brand" href={t.path}><img src="/brand/logo.svg" alt="" width="24" height="24" /><span>WardenClaw</span></a>
+        <p class="footer-slogan">{t.hero.slogan}</p>
+      </div>
+      <nav aria-label={t.footer.product}>
+        <p class="footer-title">{t.footer.product}</p>
+        <ul>
+          <li><a href={`${home}#how`}>{t.nav.how}</a></li>
+          <li><a href={`${home}#modes`}>{t.nav.modes}</a></li>
+          <li><a href={`${home}#compare`}>{t.nav.compare}</a></li>
+          <li><a href={`${home}#faq`}>{t.nav.faq}</a></li>
+        </ul>
+      </nav>
+      <nav aria-label={t.footer.docs}>
+        <p class="footer-title">{t.footer.docs}</p>
+        <ul>
+          <li><a href={`${d}try/`}>{t.footer.try}</a></li>
+          <li><a href={`${d}install/`}>{t.nav.install}</a></li>
+          <li><a href={`${d}app/`}>{t.footer.app}</a></li>
+          <li><a href={`${d}connect-phone/`}>{t.footer.connect}</a></li>
+          <li><a href={`${d}cli/`}>{t.footer.cli}</a></li>
+          <li><a href={`${d}uninstall/`}>{t.footer.uninstall}</a></li>
+        </ul>
+      </nav>
+      <nav aria-label={t.footer.security}>
+        <p class="footer-title">{t.footer.security}</p>
+        <ul>
+          <li><a href={`${d}tamper-resistance/`}>{t.footer.tamper}</a></li>
+          <li><a href={`${t.path}security/`}>{t.footer.report}</a></li>
+          <li><a href={`${d}verify/`}>{t.footer.verify}</a></li>
+          <li><a href="/.well-known/security.txt">security.txt</a></li>
+        </ul>
+      </nav>
+      <nav aria-label={t.footer.project}>
+        <p class="footer-title">{t.footer.project}</p>
+        <ul>
+          <li>{REPO_PUBLIC ? <a href={REPO_URL}>GitHub</a> : t.repoClosed}</li>
+        </ul>
+      </nav>
+    </div>
+    <ul class="footer-legal">
+      <li>{t.footer.made}</li>
+      <li>{t.footer.license}</li>
+      <li>{t.footer.privacy}</li>
+    </ul>
+  </div>
+</footer>

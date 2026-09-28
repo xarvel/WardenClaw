@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: Apache-2.0
+# protocol/: the vectors exist in one copy and must hold for all three implementations.
+# 1. The generators reproduce the committed files byte for byte (canonical JSON from the plugin's
+#    canonical.js, hardware and transport vectors from the Go reference).
+# 2. The vector tests of the daemon (Go), the app (TypeScript) and the plugin (JavaScript) pass
+#    against protocol/vectors/.
+name: protocol
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "protocol/**"
+      - "daemon/envelope/**"
+      - "daemon/cmd/wardenctl/**"
+      - "app/src/core/**"
+      - "app/scripts/test-core.mjs"
+      - "plugin/src/**"
+      - "plugin/test/**"
+      - ".github/workflows/protocol.yml"
+  pull_request:
+    paths:
+      - "protocol/**"
+      - "daemon/envelope/**"
+      - "daemon/cmd/wardenctl/**"
+      - "app/src/core/**"
+      - "app/scripts/test-core.mjs"
+      - "plugin/src/**"
+      - "plugin/test/**"
+      - ".github/workflows/protocol.yml"
+
+permissions: {}
+
+concurrency:
+  group: protocol-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vectors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: daemon/go.mod
+          cache: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Vectors are reproducible
+        run: |
+          node protocol/vectors/gen_vectors.mjs > protocol/vectors/canonical_vectors.json
+          (cd daemon && go test ./envelope -run 'TestHWVectors|TestTransportVectors' -update-hw -update-transport)
+          git diff --exit-code -- protocol/vectors
+      - name: Go (daemon)
+        working-directory: daemon
+        run: go test ./envelope ./cmd/wardenctl -run 'Vectors|Compat'
+      - name: TypeScript (app)
+        working-directory: app
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test --test-name-pattern='vectors' scripts/test-core.mjs
+      - name: JavaScript (plugin)
+        working-directory: plugin
+        run: |
+          npm ci --no-audit --no-fund
+          node --test test/vectors.test.js test/hardware.test.js

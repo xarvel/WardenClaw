@@ -1,0 +1,19 @@
+WardenClaw
+Copyright (C) 2026 The WardenClaw Authors
+
+This repository combines the components of WardenClaw. Their licenses are
+mapped by path in LICENSE. Each component keeps its own NOTICE with the
+third-party attributions that travel with its builds:
+
+  daemon/NOTICE   wardend and wardenctl (release archives include it)
+  app/NOTICE      the Android app (APK): yubikit-android, llama.rn/llama.cpp,
+                  ONNX Runtime, @huggingface/tokenizers, Expo, React Native
+  plugin/NOTICE   the OpenClaw plugin
+  site/NOTICE     the site: fonts, build dependencies
+
+The protocol specification and test vectors (protocol/) contain no
+third-party material.
+
+"WardenClaw" and the WardenClaw logo and icons are trademarks of The
+WardenClaw Authors; no license in this repository grants rights to them.
+See TRADEMARKS.md.

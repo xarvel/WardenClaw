@@ -1,0 +1,8 @@
+{
+  "platforms": ["apple"],
+  "apple": {
+    "modules": ["WardenPushModule"],
+    "appDelegateSubscribers": ["WardenPushAppDelegate"],
+    "podspecPath": ["ios/WardenPush.podspec"]
+  }
+}
