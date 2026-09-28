@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- The service and permissions go into the app manifest via the config plugin plugin/withWardenWatch.js -->
+</manifest>

@@ -1,0 +1,24 @@
+wardend (WardenClaw execution gate) and wardenctl
+Copyright (C) 2026 The WardenClaw Authors
+
+wardend and wardenctl are free software: you can redistribute them and/or
+modify them under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version. See LICENSE.
+
+The WardenClaw protocol specification and its test vectors are not part of
+this directory: they live in protocol/ at the root of the repository under
+the Apache License, Version 2.0.
+
+"WardenClaw" and the WardenClaw logo are trademarks of The WardenClaw
+Authors; no license under the AGPL or the Apache License grants rights to
+them. See TRADEMARKS.md at the root of the repository.
+
+Third-party components
+----------------------
+
+golang.org/x/sys v0.48.0
+  BSD-3-Clause, Copyright 2009 The Go Authors.
+
+The Go standard library (linked into the binaries)
+  BSD-3-Clause, Copyright 2009 The Go Authors.

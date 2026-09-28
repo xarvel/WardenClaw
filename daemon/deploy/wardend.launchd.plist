@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  wardend as a system LaunchDaemon on macOS (deploy/macos-install.sh renders it; DRY_RUN prints
+  the rendered plist without changing anything). wardend runs as root for the Endpoint Security
+  client and starts the agent harness as a child under the agent's own user (child_user); the
+  LaunchDaemon plist, the bundle, the config and the state live in root-owned places the agent
+  cannot write.
+
+  This is a TEMPLATE. To fill it by hand replace all @...@:
+    @LABEL@         launchd label. When wrapping the OpenClaw gateway it is the gateway's own label
+                    (ai.openclaw.gateway, or ai.openclaw.<profile>): OpenClaw recognises a system
+                    LaunchDaemon with its own label and refuses to write or repair a user LaunchAgent
+                    next to it. Otherwise dev.wardenclaw.wardend.
+    @WARDEND@       the binary inside the bundle:
+                    /Library/Application Support/WardenClaw/wardend.app/Contents/MacOS/wardend
+    @CONFIG@        /etc/wardend/config.json
+    @STATE_DIR@     /var/db/wardend (root 0700: key, journal, socket)
+    @CHILD_USER@    the agent user the harness runs as
+    @HARNESS_ARGS@  the harness command, one <string> element per argument
+    @HARNESS_ENV@   the harness's own environment, <key>/<string> pairs from the LaunchAgent it
+                    replaces (may be nothing). A PATH of its own replaces the default PATH below.
+    @LOG@           /var/log/wardend.log (launchd appends stdout and stderr there)
+
+  KeepAlive restarts wardend when it exits (the harness exits with it: wardend returns its code);
+  RunAtLoad starts it at boot. ProcessType Background keeps it out of the user's resource class.
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>@LABEL@</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>@WARDEND@</string>
+		<string>run</string>
+		<string>--config</string>
+		<string>@CONFIG@</string>
+		<string>--state-dir</string>
+		<string>@STATE_DIR@</string>
+		<string>--require-hardened</string>
+		<string>--child-user</string>
+		<string>@CHILD_USER@</string>
+		<string>--quiet</string>
+		<string>--</string>
+@HARNESS_ARGS@
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key><string>/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin</string>
+@HARNESS_ENV@
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>StandardOutPath</key>
+	<string>@LOG@</string>
+	<key>StandardErrorPath</key>
+	<string>@LOG@</string>
+</dict>
+</plist>

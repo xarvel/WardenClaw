@@ -1,0 +1,7 @@
+---
+// The push notification page.
+import DocsPage from "../../components/DocsPage.astro";
+import { en } from "../../i18n/en";
+import { Content, frontmatter, getHeadings } from "../../docs/apns.en.md";
+---
+<DocsPage t={en} frontmatter={frontmatter} headings={getHeadings()} slug="apns/"><Content /></DocsPage>

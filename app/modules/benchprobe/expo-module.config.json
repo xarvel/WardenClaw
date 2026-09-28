@@ -1,0 +1,9 @@
+{
+  "platforms": ["android", "ios"],
+  "android": {
+    "modules": ["com.wardenclaw.modules.benchprobe.BenchProbeModule"]
+  },
+  "ios": {
+    "modules": ["BenchProbeModule"]
+  }
+}
