@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Every commit of a pull request carries a Signed-off-by trailer (the Developer Certificate of
+# Origin, CONTRIBUTING.md). There is no contributor license agreement: the sign-off is what makes
+# "inbound = outbound" hold, so the check runs on every pull request, whatever paths it touches,
+# and names each unsigned commit. Twenty lines of shell, no external action, no bot, no token
+# beyond reading the repository. Merge commits are skipped: GitHub and "git merge" write them
+# without a trailer.
+name: dco
+
+on:
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: dco-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dco:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      # The whole history: the commits of the pull request are the ones the base branch lacks.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Every commit is signed off
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch --no-tags origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          missing=0
+          checked=0
+          for sha in $(git rev-list --no-merges "origin/$BASE_REF..HEAD"); do
+            checked=$((checked + 1))
+            if git log -1 --format=%B "$sha" | grep -Eq '^Signed-off-by: .+ <.+@.+>$'; then
+              continue
+            fi
+            missing=$((missing + 1))
+            subject=$(git log -1 --format=%s "$sha" | sed 's/%/%25/g')
+            echo "::error title=DCO::commit ${sha} (${subject}) has no Signed-off-by trailer. Sign it with git commit --amend -s, or git rebase --signoff for several commits, and push again (CONTRIBUTING.md, section Developer Certificate of Origin)"
+          done
+          if [ "$missing" -gt 0 ]; then
+            echo "$missing of $checked commits without a sign-off"
+            exit 1
+          fi
+          echo "all $checked commits are signed off"

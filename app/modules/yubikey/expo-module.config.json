@@ -1,0 +1,10 @@
+{
+  "platforms": ["android", "apple"],
+  "android": {
+    "modules": ["com.wardenclaw.modules.yubikey.YubikeyModule"]
+  },
+  "apple": {
+    "modules": ["YubikeyModule"],
+    "podspecPath": ["ios/Yubikey.podspec"]
+  }
+}

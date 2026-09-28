@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Entitlements of the wardend bundle on macOS. The Endpoint Security client entitlement is
+  granted by Apple per Team ID (the System Extensions / Endpoint Security request form); it is
+  honoured only in a signed bundle (Developer ID) with the matching provisioning profile embedded
+  as Contents/embedded.provisionprofile. Without it es_new_client fails with NOT_ENTITLED unless
+  SIP is off and the boot-args carry amfi_get_out_of_my_way=1: a development machine only
+  (docs/macos.md).
+
+  Sign: codesign -s "Developer ID Application: ..." -o runtime \
+          --entitlements deploy/wardend.entitlements \
+          "/Library/Application Support/WardenClaw/wardend.app"
+-->
+<plist version="1.0">
+<dict>
+	<key>com.apple.developer.endpoint-security.client</key>
+	<true/>
+</dict>
+</plist>

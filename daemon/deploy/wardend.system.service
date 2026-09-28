@@ -1,0 +1,98 @@
+# wardend as a SYSTEM service (hardened install, recommended).
+#
+# wardend runs as root, its files are root-owned, and the agent harness is launched AS A CHILD
+# of wardend under a SEPARATE unprivileged user (--child-user). The model running under the
+# harness uid then cannot:
+#   - send signals to wardend (kill/SIGKILL): different uid;
+#   - ptrace/process_vm_writev/write to /proc/<sup>/mem: kernel rejects by uid (+ Yama ptrace_scope);
+#   - overwrite the binary/config/key/journal: they are root-owned, directories are 0700;
+#   - overwrite this unit: it is in /etc, root-owned.
+#
+# This is a TEMPLATE. deploy/hardened-install.sh fills in the placeholders (DRY_RUN=1 prints
+# the rendered unit without making changes). To fill manually: replace all @...@.
+#   @AGENT_USER@      harness user (no sudo/wheel/docker/lxd)
+#   @AGENT_HOME@      its home directory (outside /home: ProtectHome below hides /home entirely)
+#   @RW_PATHS@        directories the harness may write to besides its home (space-separated, may be empty)
+#   @HARNESS_CMD@     harness command, absolute paths (e.g. /usr/bin/node /opt/<harness>/index.js ...)
+#   @HARNESS_ENV@     the harness's own Environment= lines, one per line (may be nothing)
+#
+# KEEP_HOME (the one-command install that wraps an existing OpenClaw in place): the installer
+# drops ProtectHome, PrivateTmp, ProtectSystem, ReadWritePaths and ProtectKernelTunables: they
+# would also bind the root commands rootexec runs inside this unit. The boundary is the uid and
+# the filter; those options were extra.
+#
+# IMPORTANT: the sandbox options below apply to the ENTIRE unit, including the harness child.
+# Everything the harness needs to write must be in ReadWritePaths; everything it needs to
+# read must not be under /home or /root.
+
+[Unit]
+Description=WardenClaw supervisor (hardened) wrapping the agent harness
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# wardend starts and stays as root. It launches the harness itself: installs the seccomp
+# filter, resets the child's oom_score_adj to 0, then setgroups/setgid/setuid to @AGENT_USER@
+# and exec. Do NOT set User=/Group=: a system unit already runs as root, and an explicit
+# User=root combined with NoNewPrivileges=true causes systemd (tested on 255, Ubuntu 24.04)
+# to drop CAP_SETUID from the process capability set. The child's setuid to @AGENT_USER@
+# then fails with EPERM and wardend does not start (live run 2026-09-27, docs/aws-hardened-test.md).
+# Test: TestSystemUnitKeepsSetuid.
+
+# Environment is inherited by the harness: without this it would have HOME=/root (hidden by ProtectHome).
+# PATH: the agent's `sudo` is wardend's shim in /usr/local/libexec/wardend/bin (installed with
+# --root-exec; the directory is simply absent otherwise), then the usual system directories.
+Environment=HOME=@AGENT_HOME@ USER=@AGENT_USER@ LOGNAME=@AGENT_USER@
+Environment=PATH=/usr/local/libexec/wardend/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# The harness's own Environment= lines (the installer copies them from the service it wrapped,
+# PATH first prefixed with the shim directory); later lines override earlier ones.
+@HARNESS_ENV@
+WorkingDirectory=@AGENT_HOME@
+
+# Mode (observe/ticket) is read from /etc/wardend/config.json: first week observe, then ticket.
+# --require-hardened: refuse to start if the binary, config, or key are not root-owned.
+ExecStart=/usr/local/bin/wardend run \
+  --config /etc/wardend/config.json \
+  --state-dir /var/lib/wardend \
+  --require-hardened \
+  --child-user @AGENT_USER@ \
+  --quiet \
+  -- @HARNESS_CMD@
+
+Restart=always
+RestartSec=5
+# SIGTERM goes only to wardend (which forwards it to the harness); systemd kills the rest of
+# the tree after TimeoutStopSec.
+KillMode=mixed
+# wardend returns the harness exit code; death by SIGTERM = 143.
+SuccessExitStatus=0 143
+
+# systemd hardening (in addition to different uids):
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+# /var/lib/wardend: key, journal, socket. /etc/wardend: `wardend pair approve` appends
+# trusted_devices to the config. Both directories are root 0700, inaccessible to the harness.
+ReadWritePaths=/var/lib/wardend /etc/wardend @AGENT_HOME@ @RW_PATHS@
+# /run/wardend: the rootexec socket (root:<agent group> 0660), the one file of wardend's the
+# harness may reach, and only with "root_exec": {"enabled": true} in the config (docs/rootexec.md).
+# The directory is created and removed with the service.
+RuntimeDirectory=wardend
+RuntimeDirectoryMode=0755
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+# No RestrictSUIDSGID: systemd implements it with a seccomp filter that answers openat2(2) with
+# ENOSYS (it cannot inspect the open_how struct and expects the caller to fall back to openat).
+# OpenClaw's fs-safe native module takes the gateway lock with openat2(RESOLVE_BENEATH) and has
+# no fallback: under RestrictSUIDSGID the gateway dies with "failed to acquire gateway lock |
+# openat2 beneath root: Function not implemented" (live run, Pi 5, systemd 257, 2026-09-30).
+# A set-uid file owned by the agent user gives it nothing anyway: the uid is the boundary.
+LockPersonality=true
+# OOM: let the kernel kill the harness before the supervisor. wardend resets the child to 0.
+OOMScoreAdjust=-500
+
+[Install]
+WantedBy=multi-user.target

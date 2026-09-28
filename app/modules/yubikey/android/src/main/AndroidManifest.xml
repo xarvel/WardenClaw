@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.NFC" />
+  <!-- NFC is not required to install: without it the app works, the second factor is unavailable -->
+  <uses-feature android:name="android.hardware.nfc" android:required="false" />
+  <!-- YubiKey over USB-C (OTG). Also optional. Permission for a specific key is asked at runtime
+       (UsbManager.requestPermission), so no USB_DEVICE_ATTACHED intent-filter on the activity:
+       otherwise Android would offer to open WardenClaw every time a key is plugged in. -->
+  <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+</manifest>

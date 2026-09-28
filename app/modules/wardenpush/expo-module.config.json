@@ -1,0 +1,11 @@
+{
+  "platforms": ["android", "apple"],
+  "android": {
+    "modules": ["com.wardenclaw.modules.wardenpush.WardenPushModule"]
+  },
+  "apple": {
+    "modules": ["WardenPushModule"],
+    "appDelegateSubscribers": ["WardenPushAppDelegate"],
+    "podspecPath": ["ios/WardenPush.podspec"]
+  }
+}

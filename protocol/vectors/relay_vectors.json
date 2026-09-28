@@ -1,0 +1,146 @@
+{
+  "boxKey": {
+    "info": "wardenclaw.relay.v1",
+    "key": "7d1af5557dfb1b9b211b24dc2620b3eef69633c6dbe8ade15a41913d7ce97c57",
+    "note": "shared = X25519(my encPrivate, their enc); salt = sha256(utf8(supervisor.id + device.id)); key = HKDF-SHA256(ikm shared, salt, info, 32 bytes). One key per (supervisor, device), both directions.",
+    "salt": "13e27cf93355baf8be7a296ffc285e294b516dea7f0602c4a6075e1eb641fa10",
+    "shared": "6900c737dd74bf97502a30710b49876ad2ce1a036534a938e24fa248125dd453"
+  },
+  "card": {
+    "createdAt": 1790850000000,
+    "digest": "c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedf",
+    "expiresAt": 1790850300000,
+    "id": "wd-00112233445566778899aabbccddeeff",
+    "note": "supervisorSig of a card = Ed25519(supervisor identity key, utf8(signingString)), signingString = canonicalJson({type:\"wardenclaw.card.v1\", id, digest, createdAt, expiresAt}).",
+    "signingString": "{\"createdAt\":1790850000000,\"digest\":\"c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedf\",\"expiresAt\":1790850300000,\"id\":\"wd-00112233445566778899aabbccddeeff\",\"type\":\"wardenclaw.card.v1\"}",
+    "supervisorSig": "poNZfWSs6WT6IdjBXlI-X9Io1-Cz_YanC1WyPAZSJS_wLr4fg-98PxU19olT0uF2C3KAdvD7lwZlNZZ0uz2vCg"
+  },
+  "device": {
+    "enc": "JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUk",
+    "encPrivate": "6162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f80",
+    "id": "c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60",
+    "key": "5_FioQvsVZr-oZXk3OhLaVaNXSywlj60RsBoXisX8vA",
+    "seed": "2122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40"
+  },
+  "hello": {
+    "device": {
+      "frame": {
+        "client": {
+          "name": "wardenclaw-app",
+          "protocol": 1,
+          "version": "1.0.0"
+        },
+        "enc": "JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUk",
+        "key": "5_FioQvsVZr-oZXk3OhLaVaNXSywlj60RsBoXisX8vA",
+        "nonce": "gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8",
+        "role": "device",
+        "sig": "L69uAHzFsK1gsS9QCZ2p_qURW-t6vSvmOHObh1F27U9MlFgNIaeKae2TfM8pKcQ7aie21kEFhkPqzk3qG5g6CQ",
+        "ts": 1790850000000,
+        "type": "hello"
+      },
+      "signingString": "{\"client\":{\"name\":\"wardenclaw-app\",\"protocol\":1,\"version\":\"1.0.0\"},\"enc\":\"JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUk\",\"key\":\"5_FioQvsVZr-oZXk3OhLaVaNXSywlj60RsBoXisX8vA\",\"nonce\":\"gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8\",\"role\":\"device\",\"ts\":1790850000000,\"type\":\"wardenclaw.relay.hello.v1\"}"
+    },
+    "note": "sig = Ed25519(identity key, utf8(signingString)); nonce is the relay's challenge nonce.",
+    "supervisor": {
+      "frame": {
+        "client": {
+          "name": "wardend",
+          "protocol": 1,
+          "version": "1.0.0"
+        },
+        "enc": "ZLEBsdC-WocEvQePmJUAH8A-jp-VIvGI3RKNmEbUhGY",
+        "key": "ebVWLo_mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ",
+        "nonce": "gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8",
+        "role": "supervisor",
+        "sig": "-eDpWeYDj5OpSlKpoYo4420IhXGcQdDtPchv0e83FtutB8SUjQOFcFnTXZcXZPl4NG9Qn8-JzdfdBdrt8Q1FCA",
+        "ts": 1790850000000,
+        "type": "hello"
+      },
+      "signingString": "{\"client\":{\"name\":\"wardend\",\"protocol\":1,\"version\":\"1.0.0\"},\"enc\":\"ZLEBsdC-WocEvQePmJUAH8A-jp-VIvGI3RKNmEbUhGY\",\"key\":\"ebVWLo_mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ\",\"nonce\":\"gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8\",\"role\":\"supervisor\",\"ts\":1790850000000,\"type\":\"wardenclaw.relay.hello.v1\"}"
+    }
+  },
+  "link": {
+    "code": "K7Q4M2XD",
+    "enc": "ZLEBsdC-WocEvQePmJUAH8A-jp-VIvGI3RKNmEbUhGY",
+    "host": "agent-host",
+    "key": "ebVWLo_mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ",
+    "relay": "wss://relay.wardenclaw.dev/v1/ws",
+    "sid": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+    "text": "wardenclaw://pair?code=K7Q4M2XD\u0026enc=ZLEBsdC-WocEvQePmJUAH8A-jp-VIvGI3RKNmEbUhGY\u0026host=agent-host\u0026key=ebVWLo_mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ\u0026relay=wss%3A%2F%2Frelay.wardenclaw.dev%2Fv1%2Fws\u0026sid=65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8\u0026v=1",
+    "v": 2
+  },
+  "msg": {
+    "aad": "{\"exp\":1790850300000,\"from\":\"65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8\",\"id\":\"000102030405060708090a0b0c0d0e0f\",\"kind\":\"card.done\",\"to\":\"c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60\",\"type\":\"wardenclaw.relay.aad.v1\"}",
+    "frame": {
+      "body": "oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgFaiC0QssPnL1DA7fNB_QCLnqbUp9s8pHfxJXvNIzY_WSUcxL9aoxwCtULrEK-fbbN2-j8ohdoX7tJTS3xxJmo-JVnfYO32SGUk1M_hV6enNP",
+      "exp": 1790850300000,
+      "from": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+      "id": "000102030405060708090a0b0c0d0e0f",
+      "kind": "card.done",
+      "seq": 7,
+      "to": "c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60",
+      "ts": 1790850000000,
+      "type": "msg"
+    },
+    "nonce": "a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0",
+    "note": "body = b64url(nonce(24) || XChaCha20-Poly1305(boxKey.key, nonce, utf8(plaintext), utf8(aad))); aad = canonicalJson({type, id, from, to, kind, exp}) of the frame as the receiver sees it (from is set by the relay).",
+    "plaintext": "{\"id\":\"wd-00112233445566778899aabbccddeeff\",\"outcome\":\"approved\"}"
+  },
+  "note": "generated by `WARDEN_UPDATE_VECTORS=1 go test -run TestRelayVectors .` in daemon/; spec: protocol/RELAY.md. hex members are raw bytes in hex, all other binary is base64url without padding. signingString and aad are the exact UTF-8 bytes that are signed / authenticated.",
+  "pair": {
+    "aad": "{\"exp\":1790850300000,\"from\":\"c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60\",\"id\":\"f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff\",\"kind\":\"pair\",\"to\":\"65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8\",\"type\":\"wardenclaw.relay.aad.v1\"}",
+    "fingerprint": "c945 cbf2 a560 2002",
+    "frame": {
+      "body": "JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUmwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLA3LOfvhuSoPcL1zJqVlHQPhFzjrSUdCFD7bHs3Mv0tS5oAI2QPn8eXVx8oGH8GzYd3sCFCVlSCzqmx9qQ64HU8jfyhKMYO7kI_Fk6M9MmQv81evoyEaJwN4ATtGlK2fJWpKE268Zxy_mvUOO8T8IE1DfqLoh1wkiEdtoAM_6TIMZ2Yj-z6tH76n57Ze_DbS5fyRuPbDwM_quduV6ViP7SLjX3ejM1JQTQXaV455O1oLdliQ5yeE9FcdogkZ1t9_nyeMP5UZbxVNPbyLGURrL_oBCj31agFos7ACsJsYR_Cfg8BQpesyQ1YWcFAcCJUWVifvoJwngu8OUpRe5FO7Md3JW_EZ8zTHxLRng5t9mgnoZUmkQ6TuJDc2T4GuCoU-h1Sy7KjJbqJ2Id-Y1lmJLjUCKuXeLwUKrLAkJMcFVl59cn-RvaZGjJi_w0YsuDA28dggbI-G6F-5svYXwCe6cjD3es3WqYpHbyLZrLYoDe1FUVcwzQtSeX4K5xZj_8qQAXxYo0E7G-fyypljBNVuijWNURhWTiej8CTKIOj9SYoatmvTawU3cJXkvGoQ0driMPOxAy2UKd2zbguyHj15q7_5imSwZTUw5X-glEQofXGxlxCSaRunyvJLWiwUs_AdIPhFr2ohVfvrdHwdex1UJRqPrb2Wz8",
+      "exp": 1790850300000,
+      "from": "c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60",
+      "id": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+      "kind": "pair",
+      "seq": 1,
+      "to": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+      "ts": 1790850000000,
+      "type": "pair"
+    },
+    "nonce": "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0",
+    "note": "A pair frame only: body = b64url(device.enc raw (32) || nonce(24) || ciphertext). The box is the one of msg (same boxKey, aad with kind \"pair\" and from = device.id). plaintext = {payload, signature}; signature = Ed25519(device identity key, utf8(signingString)), signingString = canonicalJson({type:\"wardenclaw.pair.v1\", ...payload}). The supervisor refuses the frame unless payload.enc equals the 32 bytes in front of the body and payload.deviceId equals from.",
+    "payload": {
+      "code": "K7Q4M2XD",
+      "deviceId": "c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60",
+      "pubkey": "5_FioQvsVZr-oZXk3OhLaVaNXSywlj60RsBoXisX8vA",
+      "enc": "JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUk",
+      "name": "Test phone",
+      "supervisorId": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+      "ts": 1790850000000,
+      "nonce": "5b8e2f0a-1c3d-4e5f-8a9b-0c1d2e3f4a5b"
+    },
+    "plaintext": "{\"payload\":{\"code\":\"K7Q4M2XD\",\"deviceId\":\"c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60\",\"pubkey\":\"5_FioQvsVZr-oZXk3OhLaVaNXSywlj60RsBoXisX8vA\",\"enc\":\"JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUk\",\"name\":\"Test phone\",\"supervisorId\":\"65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8\",\"ts\":1790850000000,\"nonce\":\"5b8e2f0a-1c3d-4e5f-8a9b-0c1d2e3f4a5b\"},\"signature\":\"YRHvwaQxVWF_FfTI2C1Sb1S-4xOoR6ne21pFjc7f4OaI5kyBn_K1LlxFhjdAP2KlT7KMqwcoB7Dy_QR2ezxsDg\"}",
+    "signature": "YRHvwaQxVWF_FfTI2C1Sb1S-4xOoR6ne21pFjc7f4OaI5kyBn_K1LlxFhjdAP2KlT7KMqwcoB7Dy_QR2ezxsDg",
+    "signingString": "{\"code\":\"K7Q4M2XD\",\"deviceId\":\"c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60\",\"enc\":\"JE_juWPomd0pW6_84kjTUw86mnR5ugYwAmgOv-etrUk\",\"name\":\"Test phone\",\"nonce\":\"5b8e2f0a-1c3d-4e5f-8a9b-0c1d2e3f4a5b\",\"pubkey\":\"5_FioQvsVZr-oZXk3OhLaVaNXSywlj60RsBoXisX8vA\",\"supervisorId\":\"65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8\",\"ts\":1790850000000,\"type\":\"wardenclaw.pair.v1\"}"
+  },
+  "push": {
+    "apns": {
+      "body": "oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgFaiC0QssPnL1DA7fNB_QCLnqbUp9s8pHfxJXvNIzY_WSUcxL9aoxwCtULrEK-fbbN2-j8ohdoX7tJTS3xxJmo-JVnfYO32SGUk1M_hV6enNP",
+      "exp": 1790850300000,
+      "id": "000102030405060708090a0b0c0d0e0f",
+      "kind": "card.done",
+      "sid": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+      "to": "c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60"
+    },
+    "fcm": {
+      "body": "oKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgFaiC0QssPnL1DA7fNB_QCLnqbUp9s8pHfxJXvNIzY_WSUcxL9aoxwCtULrEK-fbbN2-j8ohdoX7tJTS3xxJmo-JVnfYO32SGUk1M_hV6enNP",
+      "exp": "1790850300000",
+      "id": "000102030405060708090a0b0c0d0e0f",
+      "kind": "card.done",
+      "sid": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+      "to": "c945cbf2a5602002141e2fb9d17054d6ca069951df73f49d1f8aca87f9878f60"
+    },
+    "note": "What a notification carries of msg.frame when the device is offline (RELAY.md section 8): apns is the `relay` member of the APNs payload, fcm the data of the FCM message (all strings, exp in decimal). The receiver rebuilds the aad from the notification alone: canonicalJson({type, id, from: sid, to, kind, exp}), equal to msg.aad, and opens body with boxKey.key."
+  },
+  "supervisor": {
+    "enc": "ZLEBsdC-WocEvQePmJUAH8A-jp-VIvGI3RKNmEbUhGY",
+    "encPrivate": "4142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f60",
+    "id": "65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8",
+    "key": "ebVWLo_mVPlAeLES6KmLp5AfhTrmlb7X4OORC60ElmQ",
+    "seed": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+  }
+}
