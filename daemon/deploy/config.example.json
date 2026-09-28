@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "mode": "observe",
+  "policy_mode": "tripwire",
+  "ticket_ttl": "120s",
+  "ts_window": "60s",
+  "max_pending": 64,
+  "linger": "2s",
+  "toctou_roots": "stop",
+  "toctou_service": "off",
+  "http_listen": "127.0.0.1:8787",
+  "public_url": "https://wardend.example.com",
+  "pair_code_ttl": "5m",
+  "ntfy_url": "",
+  "gateway_db": "off",
+  "trusted_devices": []
+}

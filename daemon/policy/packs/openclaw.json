@@ -1,0 +1,256 @@
+{
+  "pack": "openclaw",
+  "description": "OpenClaw gateway 2026.9.x: its internal node workers and process supervisors, the probes the gateway runs itself (git, systemd, lsof, gh token for the GitHub plugin, the egress proxy CA), the zones of its settings and secrets, and the CLI verbs that change the agent's settings.",
+  "tested": [
+    "2026.9.6"
+  ],
+  "family": "openclaw",
+  "vars": {
+    "OPENCLAW_ROOT": [
+      "/usr/lib/node_modules/openclaw",
+      "/usr/local/lib/node_modules/openclaw",
+      "/opt/openclaw"
+    ],
+    "OPENCLAW_HOME": [
+      "${AGENT_HOME}/.openclaw"
+    ]
+  },
+  "detect": [
+    {
+      "var": "OPENCLAW_ROOT",
+      "command": "^(/.*/openclaw)/(?:dist/(?:index|entry)\\.m?js|openclaw\\.mjs)$"
+    }
+  ],
+  "service": [
+    {
+      "id": "worker",
+      "path": "/node$",
+      "argv_json": "^\\[\"(?:[^\"\\\\]|\\\\.)*\"(?:,\"-(?:[^\"\\\\]|\\\\.)*\")*,\"${OPENCLAW_ROOT}/dist/(?:[a-z0-9-]+/)*(?:[a-z0-9.-]+\\.(?:worker|child)\\.m?js|service-child-[a-z-]+\\.m?js|spawn-broker/worker\\.m?js)\"(?:,|\\])",
+      "note": "internal workers and process supervisors of the gateway (node <root>/dist/.../*.worker.js); no inheritance: their children are checked independently"
+    },
+    {
+      "id": "oom-launcher",
+      "path": "^/usr/bin/dash$",
+      "argv_json": "^\\[\"/bin/sh\",\"-c\",\"(?:echo 1000 > /proc/self/oom_score_adj 2>/dev/null; exec \\\\\"\\$0\\\\\" \\\\\"\\$@\\\\\"|echo 1000 > /proc/self/oom_score_adj 2>/dev/null; if \\[ \\\\\"\\$\\{OC_INTERNAL_OOM_EXEC_BASH_ENV\\+x\\}\\\\\" = x \\]; then BASH_ENV=\\\\\"\\$OC_INTERNAL_OOM_EXEC_BASH_ENV\\\\\"; export BASH_ENV; fi; unset OC_INTERNAL_OOM_EXEC_BASH_ENV; if \\[ \\\\\"\\$\\{OC_INTERNAL_OOM_EXEC_ENV\\+x\\}\\\\\" = x \\]; then ENV=\\\\\"\\$OC_INTERNAL_OOM_EXEC_ENV\\\\\"; export ENV; fi; unset OC_INTERNAL_OOM_EXEC_ENV; if \\[ \\\\\"\\$\\{OC_INTERNAL_OOM_EXEC_CDPATH\\+x\\}\\\\\" = x \\]; then CDPATH=\\\\\"\\$OC_INTERNAL_OOM_EXEC_CDPATH\\\\\"; export CDPATH; fi; unset OC_INTERNAL_OOM_EXEC_CDPATH; if \\[ \\\\\"\\$\\{OC_INTERNAL_OOM_EXEC_PS4\\+x\\}\\\\\" = x \\]; then PS4=\\\\\"\\$OC_INTERNAL_OOM_EXEC_PS4\\\\\"; export PS4; fi; unset OC_INTERNAL_OOM_EXEC_PS4; exec \\\\\"\\$0\\\\\" \\\\\"\\$@\\\\\")\"(,\"(?:[^\"\\\\]|\\\\.)*\")+\\]$",
+      "note": "OOM wrapper used by the gateway and its service supervisor to launch child processes (exec the program); the program is checked by its own rules; all ancestors are gateway node",
+      "chain_all": "/node$"
+    },
+    {
+      "id": "gh-token",
+      "path": "/gh$",
+      "argv": [
+        "gh",
+        "auth",
+        "token",
+        "--hostname",
+        "github\\.com"
+      ],
+      "note": "the gateway fetches its GitHub plugin token; gateway only (chain_all node)",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "gh-infocmp",
+      "path": "/infocmp$",
+      "caller": "/gh$",
+      "note": "gh reads terminal capabilities"
+    },
+    {
+      "id": "egress-proxy-ca",
+      "path": "/openssl$",
+      "argv_json": "^\\[\"(?:[^\"\\\\]*/)?openssl\",\"req\",\"-config\",\"${OPENCLAW_HOME}/secret-egress-proxy/[^\"\\\\]*\"(,\"[^\"\\\\]*\")*\\]$",
+      "note": "the gateway creates the CA for its egress proxy",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "unit-probe",
+      "path": "/systemctl$",
+      "argv_json": "^\\[\"systemctl\",\"--user\",\"show\",\"openclaw-gateway(?:\\.service)?\"(?:,\"--no-page\")?,\"(?:-p|--property)\",\"[A-Za-z,]+\"\\]$",
+      "note": "the gateway reads properties of its own unit",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "systemd-version-probe",
+      "path": "/busctl$",
+      "argv": [
+        "busctl",
+        "--user",
+        "--auto-start=no",
+        "get-property",
+        "org\\.freedesktop\\.systemd1",
+        "/org/freedesktop/systemd1",
+        "org\\.freedesktop\\.systemd1\\.Manager",
+        "Version"
+      ],
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "port-probe",
+      "path": "/lsof$",
+      "argv": [
+        "(/usr)?(/s?bin/)?lsof",
+        "-nP",
+        "-iTCP:[0-9]+",
+        "-sTCP:LISTEN",
+        "-Fpc"
+      ],
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "login-env-probe",
+      "path": "/bash$",
+      "argv": [
+        "(/usr)?/bin/bash",
+        "-l",
+        "-c",
+        "printf '\\\\0'; env -0"
+      ],
+      "note": "the gateway reads the login shell environment; profile children are checked independently",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "git-probe",
+      "path": "/git$",
+      "argv_json": "^\\[\"git\",\"-c\",\"maintenance\\.autoDetach=false\",\"-c\",\"gc\\.autoDetach=false\",\"-C\",\"[^\"\\\\]*\"(?:,\"-c\",\"core\\.quotePath=false\")?,\"(?:rev-parse|diff|ls-files|status|log|show|symbolic-ref|merge-base|cat-file|for-each-ref)\"(,\"[^\"\\\\]*\")*\\]$",
+      "note": "the gateway reads git state of working directories",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "git-read",
+      "path": "/git$",
+      "argv_json": "^\\[\"git\"(?:,\"-C\",\"[^\"\\\\]*\")?,\"(?:rev-parse|status|config|remote)\"(,\"[^\"\\\\]*\")*\\]$",
+      "argv_none": "^(--add|--unset(-all)?|--replace-all|--rename-section|--remove-section|--edit|-e|set-url|add|rm|remove|rename|set-head|set-branches|prune|update)$",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "npm-query",
+      "path": "/npm-cli\\.js$",
+      "argv_json": "^\\[\"(?:[^\"\\\\]*/)?npm\",\"(?:root\",\"-g\"|config\",\"get\",\"[^\"\\\\]*\")\\]$",
+      "chain_all": "/node$",
+      "chain_max": 4
+    },
+    {
+      "id": "read-probe",
+      "path": "/(ps|getent|uname|id|hostname|whoami)$",
+      "argv_none": "^(-[a-zA-Z]*[bF]|--boot|--file)$",
+      "note": "the gateway reads processes, users, and the hostname",
+      "chain_all": "/node$",
+      "chain_max": 4
+    }
+  ],
+  "zones": {
+    "secret": [
+      "(?i)^${ANY_HOME}/\\.openclaw/(secrets|credentials|secret-egress-proxy)(/|$)",
+      "(?i)^${ANY_HOME}/\\.openclaw/openclaw\\.json",
+      "(?i)^${ANY_HOME}/\\.openclaw/agents/[^/]+/agent/([^/]*auth[^/]*|[^/]*\\.sqlite[^/]*|[^/]*credential[^/]*|[^/]*token[^/]*)$",
+      "(?i)^${OPENCLAW_HOME}/(secrets|credentials|secret-egress-proxy|openclaw\\.json)(/|$)"
+    ],
+    "config": [
+      "^${ANY_HOME}/\\.openclaw/(openclaw\\.json|extensions|hooks|plugins|npm/projects)(/|$)",
+      "^${OPENCLAW_HOME}/(extensions|hooks|plugins|npm/projects)(/|$)",
+      "^${OPENCLAW_ROOT}(/|$)"
+    ],
+    "scratch": [
+      "^${ANY_HOME}/\\.openclaw/tmp(/|$)",
+      "^${OPENCLAW_HOME}/tmp(/|$)"
+    ]
+  },
+  "agent_config": [
+    {
+      "id": "openclaw-cli",
+      "entry": "(^|/)openclaw(\\.mjs)?$|/openclaw/dist/(index|entry)\\.m?js$",
+      "verbs": {
+        "config": [
+          "set",
+          "unset",
+          "patch",
+          "edit",
+          "apply",
+          "import"
+        ],
+        "cron": [
+          "add",
+          "edit",
+          "rm",
+          "remove",
+          "delete",
+          "enable",
+          "disable",
+          "update",
+          "create"
+        ],
+        "secrets": [
+          "**"
+        ],
+        "devices": [
+          "approve",
+          "reject",
+          "remove",
+          "clear",
+          "revoke",
+          "rotate"
+        ],
+        "update": [
+          "**"
+        ],
+        "plugins": [
+          "install",
+          "uninstall",
+          "enable",
+          "disable",
+          "update",
+          "reload"
+        ],
+        "mcp": [
+          "login",
+          "add",
+          "remove",
+          "logout",
+          "set"
+        ],
+        "approvals": [
+          "set",
+          "allow",
+          "remove",
+          "add"
+        ],
+        "gateway": [
+          "stop",
+          "restart",
+          "install",
+          "uninstall",
+          "start"
+        ],
+        "agents": [
+          "add",
+          "remove",
+          "edit",
+          "set",
+          "create",
+          "delete"
+        ],
+        "channels": [
+          "add",
+          "remove",
+          "login",
+          "logout"
+        ],
+        "pairing": [
+          "**"
+        ],
+        "nodes": [
+          "approve",
+          "remove",
+          "pair"
+        ]
+      }
+    }
+  ]
+}

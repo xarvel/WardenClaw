@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# plugin/ (OpenClaw adapter): node:test suite. The relay end-to-end test runs against a wardend
+# built from daemon/ in the same commit, so daemon changes trigger this workflow too.
+name: plugin
+
+on:
+  push:
+    branches: [main]
+    paths: ["plugin/**", "protocol/**", "daemon/**", ".github/workflows/plugin.yml"]
+  pull_request:
+    paths: ["plugin/**", "protocol/**", "daemon/**", ".github/workflows/plugin.yml"]
+
+permissions: {}
+
+concurrency:
+  group: plugin-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: daemon/go.mod
+          cache: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Build wardend for the relay e2e test
+        working-directory: daemon
+        run: go build -o wardend .
+      - name: Test
+        working-directory: plugin
+        run: |
+          npm ci --no-audit --no-fund
+          npm test

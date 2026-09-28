@@ -1,0 +1,39 @@
+WardenClaw
+Copyright (C) 2026 The WardenClaw Authors (see AUTHORS)
+
+This repository contains several components under different licenses. Each
+path is covered by the license below; the full license texts are in the
+LICENSE files of the listed directories. SPDX-License-Identifier lines in
+source files state the license of each file.
+
+  path                  license                                   full text
+  --------------------  ----------------------------------------  -------------------------------
+  daemon/               AGPL-3.0-or-later                         daemon/LICENSE
+                        (wardend, wardenctl, install.sh)
+  app/                  GPL-3.0-or-later, with an additional      app/LICENSE,
+                        permission for distribution through       app/COPYING.exceptions
+                        app stores (GPL section 7)
+  plugin/               Apache-2.0                                plugin/LICENSE
+  protocol/             Apache-2.0                                protocol/LICENSE
+                        (specification and test vectors)
+  site/                 code: Apache-2.0                          site/LICENSE
+                        documentation texts in site/src/docs/     site/src/docs/LICENSE
+                        and the diagrams site/public/brand/
+                        {architecture,lifecycle}.*.svg: CC-BY-4.0
+  repository root       Apache-2.0                                plugin/LICENSE
+  (this file, README, CI in .github/, CONTRIBUTING.md, SECURITY.md, NOTICE,
+  AUTHORS, TRADEMARKS.md, .editorconfig, .gitignore, .easignore, docs/)
+
+Exceptions that are not licensed under any of the above:
+
+  - The name "WardenClaw", the WardenClaw logo, the wordmark and the app
+    icons (app/assets/, site/public/brand/logo.svg, favicon.svg,
+    apple-touch-icon.png, site/public/favicon.ico) are trademarks of The
+    WardenClaw Authors. See TRADEMARKS.md.
+  - The hero illustration and the app screenshot of the site
+    (site/public/brand/hero.jpg, site/public/brand/app-feed.webp) are not
+    licensed for reuse.
+  - Fonts in site/public/fonts/ are under the SIL Open Font License 1.1
+    (license texts next to the fonts).
+  - Third-party components keep their own licenses; see NOTICE and the
+    NOTICE file of each component.

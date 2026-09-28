@@ -1,0 +1,49 @@
+# Owners of what decides whether a build, a release or an install is the real one, and whether a
+# command gets through the gate. A change here needs the owner's review once the ruleset on main
+# requires code owner reviews (daemon/docs/release.md, section "GitHub Settings"). Later lines
+# win for the same path.
+#
+# The owner is a person with a hardware second factor, never a bot or an agent's token.
+
+# CI, release and deploy workflows, this file
+/.github/                           @xarvel
+
+# Who may sign release tags
+/allowed_signers                    @xarvel
+
+# What runs as root on users' machines, and how releases are built and signed
+/daemon/install.sh                  @xarvel
+/daemon/uninstall.sh                @xarvel
+/daemon/deploy/                     @xarvel
+/daemon/scripts/                    @xarvel
+/daemon/release-key.txt             @xarvel
+/daemon/release-key.txt.minisig     @xarvel
+# The Go toolchain line decides what the release is built with
+/daemon/go.mod                      @xarvel
+/daemon/go.sum                      @xarvel
+
+# What decides whether a command gets through: the rules, the envelope and the ticket (what is
+# signed and how it is checked), the seccomp filter (seccomp.go, seccomp_arch_*.go and their
+# tests), and the protocol with the vectors every implementation is tested against
+/daemon/policy/                     @xarvel
+/daemon/envelope/                   @xarvel
+/daemon/seccomp*                    @xarvel
+/protocol/                          @xarvel
+
+# App builds: signing profiles, identity, dependencies, what goes to EAS
+/app/eas.json                       @xarvel
+/app/app.json                       @xarvel
+/app/package.json                   @xarvel
+/app/package-lock.json              @xarvel
+/app/scripts/                       @xarvel
+/.easignore                         @xarvel
+
+# The site: the release key it shows, the domain, the install.sh it deploys
+/site/src/config.ts                 @xarvel
+/site/public/CNAME                  @xarvel
+/site/scripts/                      @xarvel
+
+# Plugin inside the harness, and the vulnerability policy
+/plugin/package.json                @xarvel
+/plugin/package-lock.json           @xarvel
+/SECURITY.md                        @xarvel

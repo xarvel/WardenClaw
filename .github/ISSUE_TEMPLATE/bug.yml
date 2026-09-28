@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: Apache-2.0
+# The bug report form. It asks for what a wardend bug needs to be reproduced: the component, the
+# version, the supervisor state (wardend status prints it as JSON) and the service log. The last
+# checkbox repeats SECURITY.md: a vulnerability is not a bug report.
+name: Bug report
+description: Something in wardend, wardenctl, the installer, the app, the plugin, the protocol or the documentation behaves wrong.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Before you fill this in: a way around the gate, a forged or replayed approval, a key
+        leak or anything else from the scope of [SECURITY.md](https://github.com/xarvel/WardenClaw/blob/main/SECURITY.md)
+        is a vulnerability, not a bug report. Close this form and send it by email as SECURITY.md says.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - wardend (daemon/)
+        - wardenctl (daemon/cmd/wardenctl)
+        - install.sh or uninstall.sh
+        - app, Android
+        - app, iOS
+        - OpenClaw plugin (plugin/)
+        - protocol or test vectors (protocol/)
+        - site or documentation
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: "`wardend version` or `wardenctl version`; the release tag; `git rev-parse HEAD` for a build from source; the app version from the store listing or the build."
+      placeholder: "daemon/v0.4.0, or the commit hash"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: "Distribution and kernel (`uname -r`), hardened install (root service) or single-user, the harness (OpenClaw, claude-cli, other), the phone OS version when the app is involved."
+      placeholder: "Debian 13, 6.12, hardened, OpenClaw; Android 16"
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Steps to reproduce, the exact command or the card, the error text.
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: Output of `wardend status`
+      description: "The supervisor state as JSON: mode, queue, tracker, trusted devices, metrics (`sudo wardend status` on a hardened install). Remove what you do not want public, for example device names and host names."
+      render: json
+  - type: textarea
+    id: journal
+    attributes:
+      label: Journal excerpt
+      description: "`sudo journalctl -u wardend -n 100` around the time of the problem (hardened install), or what wardend printed in the terminal (single-user). For a wrong decision on a command, add the records of `wardend journal -n 20`."
+      render: text
+  - type: checkboxes
+    id: not-security
+    attributes:
+      label: Not a vulnerability
+      options:
+        - label: This is not a security issue. A way around the gate, a forged approval or a key leak goes by email as described in SECURITY.md, not into a public issue.
+          required: true
