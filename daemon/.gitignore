@@ -1,0 +1,5 @@
+wardend
+*.jsonl.tmp
+/cmd/wardenctl/wardenctl
+/cmd/wardenctl/dist/
+/dist/

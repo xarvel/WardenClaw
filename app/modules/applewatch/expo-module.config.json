@@ -1,0 +1,7 @@
+{
+  "platforms": ["apple"],
+  "apple": {
+    "modules": ["AppleWatchModule"],
+    "podspecPath": ["ios/AppleWatch.podspec"]
+  }
+}

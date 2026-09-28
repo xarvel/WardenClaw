@@ -1,0 +1,6 @@
+---
+import DocsPage from "../../components/DocsPage.astro";
+import { en } from "../../i18n/en";
+import { Content, frontmatter, getHeadings } from "../../docs/how-it-works.en.md";
+---
+<DocsPage t={en} frontmatter={frontmatter} headings={getHeadings()} slug="how-it-works/"><Content /></DocsPage>

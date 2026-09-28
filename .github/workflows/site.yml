@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# site/ (Astro landing and user documentation): static build.
+name: site
+
+on:
+  push:
+    branches: [main]
+    # README.md and daemon/install.sh: the build checks them against site/src/claims.ts.
+    paths: ["site/**", "README.md", "daemon/install.sh", ".github/workflows/site.yml"]
+  pull_request:
+    paths: ["site/**", "README.md", "daemon/install.sh", ".github/workflows/site.yml"]
+
+permissions: {}
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build

@@ -1,0 +1,75 @@
+---
+// WardenClaw next to agentsh: the full table and its sources. The data and the rules for
+// changing it are in src/compare.ts.
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { en } from "../../i18n/en";
+import { REPO_PUBLIC } from "../../config";
+import { AGENTSH_COPY, AGENTSH_ROWS, AGENTSH_URL, AGENTSH_REPO, CORRECTIONS_URL } from "../../compare";
+
+const t = en;
+const c = AGENTSH_COPY;
+const path = `${t.path}compare/agentsh/`;
+---
+<Base t={t} path={path} title={`${c.page.title} · WardenClaw`} description={c.page.description}>
+  <Header t={t} home={t.path} />
+  <main id="main" class="wrap prose compare-page">
+    <h1>{c.page.h1}</h1>
+    <p>{c.lead}</p>
+    <p class="muted">
+      {c.stamp}{" "}
+      {REPO_PUBLIC ? <a href={CORRECTIONS_URL}>{c.corrections}</a> : c.corrections}.
+    </p>
+
+    <h2 id="in-short">{c.page.proseTitle}</h2>
+    {c.paragraphs.map((p) => <p set:html={p} />)}
+
+    <h2 id="table">{c.page.tableTitle}</h2>
+    <div class="table-wrap compare compare-full" tabindex="0" role="region" aria-label={c.caption}>
+      <table>
+        <caption>{c.caption}</caption>
+        <thead>
+          <tr>
+            {c.headFull.map((h, i) =>
+              i === 0 ? <td></td> : <th scope="col" class={i === 1 ? "us" : ""}>{h}</th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {AGENTSH_ROWS.map((r) => (
+            <tr>
+              <th scope="row">{r.topic}</th>
+              <td class="us" set:html={r.wardenclaw} />
+              <td>
+                <Fragment set:html={r.agentsh} />
+                <span class="compare-src">
+                  {r.src.map((s) => <a href={s.url} rel="noopener">{s.label.replace("agentsh ", "")}</a>)}
+                </span>
+              </td>
+              <td class="ahead">{c.ahead[r.ahead]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="sources">{c.page.sourcesTitle}</h2>
+    <p>{c.page.sourcesLead}</p>
+    <ul class="sources">
+      {AGENTSH_ROWS.map((r) => (
+        <li>
+          <strong>{r.topic}.</strong>{" "}
+          {r.src.map((s, i) => <>{i > 0 && ", "}<a href={s.url} rel="noopener">{s.label}</a></>)}
+          <span class="ours">{c.page.oursLabel}: {r.ours}</span>
+        </li>
+      ))}
+    </ul>
+    <p>{c.page.method}</p>
+    <p>
+      <a href={AGENTSH_URL} rel="noopener">agentsh.org</a>, <a href={AGENTSH_REPO} rel="noopener">github.com/canyonroad/agentsh</a>
+    </p>
+    <p><a href={`${t.path}#compare-agentsh`}>{c.page.back}</a></p>
+  </main>
+  <Footer t={t} />
+</Base>

@@ -1,0 +1,54 @@
+WardenClaw app: app store exception
+Additional permission under GNU GPL version 3 section 7
+
+Copyright (C) 2026 The WardenClaw Authors
+
+The WardenClaw app is free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License as published
+by the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version (the "GPL"; the text is in the file
+LICENSE). The following additional permission applies to every file of
+the WardenClaw app that is licensed under the GPL.
+
+As an additional permission under section 7 of the GNU General Public
+License, version 3, the copyright holders of the WardenClaw app give you
+permission to convey this program, or a work based on it, in object code
+form through an application store or distribution service operated by a
+third party, such as the Apple App Store or Google Play, even though the
+terms of service or usage rules of that store, or the technical measures
+it applies to the copies it distributes (for example digital rights
+management, code signing that keeps a recipient from installing a
+modified version on the same device, or limits on the number of devices
+or on further redistribution), impose on recipients restrictions that the
+GPL would not otherwise permit, provided that all of the following
+conditions are met:
+
+  a) those restrictions are imposed by the operator of the store or
+     service and not by you, and you impose no further restrictions of
+     your own on the exercise of the rights granted by the GPL;
+
+  b) you comply with the GPL in every other respect; in particular you
+     make the Corresponding Source of the object code you convey,
+     including your modifications, available under the GPL to every
+     recipient, free of charge and free of those restrictions, as
+     section 6 of the GPL permits (for example from a public source code
+     repository); and
+
+  c) the conveyed program, or its store listing, states that the program
+     is licensed under the GPL with this additional permission and tells
+     recipients where to obtain the Corresponding Source and the text of
+     the GPL.
+
+This permission is limited to the conflict between the GPL and the terms
+or technical measures of such a store or service; it grants no other
+exception from the GPL. As section 7 of the GPL allows, when you convey a
+copy of a covered work you may remove this additional permission from
+that copy or from any part of it. If you modify the program you may
+extend this permission to your modifications, but you are not obliged to
+do so.
+
+Third-party components keep their own terms.
+
+This permission follows the approach of other GPL-licensed apps published
+in app stores (for example the Nextcloud iOS app's App Store exception),
+written as a formal additional permission under section 7.

@@ -1,0 +1,23 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.wardenclaw.modules'
+version = '0.1.0'
+
+android {
+  namespace "com.wardenclaw.modules.wardenpush"
+  defaultConfig {
+    versionCode 1
+    versionName '0.1.0'
+  }
+}
+
+// Firebase Cloud Messaging only: the token and the data message of the relay. No Analytics.
+// The app's google-services.json (app.config.ts) configures it; a build without the file has no
+// default FirebaseApp and the module says so (available() = false).
+dependencies {
+  implementation platform('com.google.firebase:firebase-bom:33.7.0')
+  implementation 'com.google.firebase:firebase-messaging'
+}
