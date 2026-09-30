@@ -11,7 +11,7 @@
     "verify-journal": "node scripts/verify-journal.mjs"
   },
   "devDependencies": {
-    "@noble/ed25519": "^2.3.0"
+    "@noble/ed25519": "^3.2.0"
   },
   "peerDependencies": {
     "openclaw": ">=2026.9.6"
