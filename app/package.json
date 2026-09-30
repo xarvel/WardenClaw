@@ -8,7 +8,7 @@
     "@expo/vector-icons": "^15.0.2",
     "@huggingface/tokenizers": "0.2.0",
     "@noble/ed25519": "^2.3.0",
-    "@noble/hashes": "^1.8.0",
+    "@noble/hashes": "^2.4.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
     "@react-navigation/bottom-tabs": "^7.19.2",
