@@ -16,7 +16,7 @@
     "@cloudflare/workers-types": "^5.20261012.1",
     "@noble/ed25519": "^3.2.0",
     "typescript": "^5.9.0",
-    "vitest": "^4.1.0",
+    "vitest": "^5.0.5",
     "wrangler": "^4.149.0"
   },
   "allowScripts": {
